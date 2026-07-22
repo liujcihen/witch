@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>日程记录</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', system-ui, sans-serif;
+        }
+        body {
+            background: linear-gradient(155deg, #daeef9 0%, #c3e2f2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+        .app-wrapper {
+            max-width: 1340px;
+            width: 100%;
+            background: rgba(247, 252, 255, 0.6);
+            backdrop-filter: blur(6px);
+            border-radius: 44px;
+            box-shadow: 0 18px 36px rgba(143, 186, 208, 0.2);
+            padding: 24px 28px 30px;
+            border: 1px solid rgba(227, 243, 252, 0.8);
+        }
+
+        /* Header */
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 22px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .header-bar h1 {
+            font-size: 27px;
+            font-weight: 370;
+            color: #2f7190;
+            letter-spacing: 1.5px;
+            background: rgba(225, 242, 252, 0.5);
+            padding: 5px 22px 5px 20px;
+            border-radius: 64px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .header-bar h1 i { color: #4287a3; }
+        
+        .action-btns {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .btn-save {
+            background: #a5d6a7;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 52px;
+            font-size: 15px;
+            font-weight: 460;
+            color: #1b5e20;
+            box-shadow: 0 4px 10px rgba(129, 199, 132, 0.2);
+            cursor: pointer;
+            transition: 0.12s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-save:hover {
+            background: #81c784;
+            transform: scale(0.97);
+        }
+        .btn-export {
+            background: #cbe6f5;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 52px;
+            font-size: 15px;
+            font-weight: 460;
+            color: #1e5e79;
+            box-shadow: 0 4px 10px rgba(128, 181, 207, 0.15);
+            cursor: pointer;
+            transition: 0.12s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-export:hover {
+            background: #bcdcf0;
+            transform: scale(0.97);
+        }
+        .save-status {
+            font-size: 13px;
+            color: #558b7a;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .save-status.show { opacity: 1; }
+
+        /* Main Grid */
+        .dashboard {
+            display: grid;
+            grid-template-columns: 330px 1fr;
+            gap: 30px;
+        }
+
+        /* Left Column */
+        .left-column {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .card {
+            background: rgba(246, 252, 255, 0.7);
+            backdrop-filter: blur(4px);
+            border-radius: 36px;
+            padding: 22px 16px;
+            box-shadow: 0 6px 18px rgba(138, 184, 209, 0.08);
+            border: 1px solid rgba(234, 247, 255, 0.7);
+        }
+        .card-title {
+            font-size: 15px;
+            font-weight: 440;
+            color: #1d617c;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            border-bottom: 1px dashed #c5deef;
+            padding-bottom: 8px;
+        }
+        .card-title i { color: #4790ad; }
+
+        /* Calendar */
+        .calendar-card { padding: 22px 16px 20px; }
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+            padding: 0 4px;
+        }
+        .month-year {
+            font-size: 21px;
+            font-weight: 410;
+            color: #1f637f;
+        }
+        .calendar-nav {
+            display: flex;
+            gap: 4px;
+        }
+        .calendar-nav button {
+            background: transparent;
+            border: none;
+            font-size: 23px;
+            width: 40px;
+            height: 40px;
+            border-radius: 40px;
+            color: #468aa8;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+        .calendar-nav button:hover { background: #d3e9f6; }
+        .weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            text-align: center;
+            font-weight: 320;
+            color: #578aa1;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        .days-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px 3px;
+        }
+        .day-cell {
+            aspect-ratio: 1/1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            border-radius: 40px;
+            background: transparent;
+            color: #1b536b;
+            cursor: pointer;
+            transition: 0.08s;
+            font-weight: 360;
+        }
+        .day-cell:hover { background: #d8ebf7; }
+        .day-cell.today {
+            background: #c1def0;
+            font-weight: 530;
+            color: #104b66;
+        }
+        .day-cell.selected {
+            background: #92c5df;
+            color: white;
+            font-weight: 480;
+            box-shadow: 0 2px 8px rgba(105, 165, 196, 0.25);
+        }
+        .day-cell.other-month { color: #91b5ca; }
+
+        /* Left Side Items (Water & Meals) */
+        .water-tracker-left {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .water-check-left {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .water-check-left span {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: white;
+            padding: 4px 10px 4px 6px;
+            border-radius: 41px;
+            font-size: 12px;
+            color: #236b86;
+            border: 1px solid #cfe0ef;
+        }
+        .water-check-left i {
+            color: #59a3c7;
+            cursor: pointer;
+            width: 20px;
+            text-align: center;
+            font-size: 16px;
+        }
+        .water-check-left i.fa-circle-check { color: #217998; }
+        .water-count-left {
+            font-size: 14px;
+            color: #124e68;
+            background: #d7eaf7;
+            padding: 4px 14px;
+            border-radius: 40px;
+            font-weight: 410;
+            text-align: center;
+        }
+        
+        .meal-list-left {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .meal-row-left input {
+            width: 100%;
+            padding: 8px 12px;
+            border-radius: 31px;
+            border: 1px solid #d7e8f3;
+            background: rgba(245, 251, 255, 0.7);
+            font-size: 13px;
+            outline: none;
+            transition: 0.1s;
+            color: #1a5068;
+        }
+        .meal-row-left input:focus {
+            border-color: #99c7e0;
+            background: #f0f9ff;
+        }
+
+        /* Right Panel */
+        .right-panel {
+            background: rgba(250, 254, 255, 0.55);
+            backdrop-filter: blur(4px);
+            border-radius: 36px;
+            padding: 18px 22px 22px;
+            border: 1px solid rgba(229, 243, 252, 0.6);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .task-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .task-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(238, 248, 254, 0.5);
+            padding: 4px 12px 4px 6px;
+            border-radius: 43px;
+        }
+        .task-row .task-check {
+            color: #679bb9;
+            font-size: 20px;
+            cursor: pointer;
+            width: 28px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+        .task-row .task-check.done { color: #3287ab; }
+        .task-row .task-text {
+            flex: 1;
+            border: none;
+            background: transparent;
+            padding: 6px 4px;
+            font-size: 14px;
+            color: #174e67;
+            outline: none;
+        }
+        .task-row .task-text:focus {
+            border-bottom: 1px dashed #81b9d6;
+            background: rgba(231, 245, 253, 0.4);
+            border-radius: 20px;
+        }
+        .task-row .delete-task {
+            background: transparent;
+            border: none;
+            color: #7faac3;
+            font-size: 16px;
+            cursor: pointer;
+            padding: 0 6px;
+            flex-shrink: 0;
+        }
+        .task-row .delete-task:hover { color: #386e89; }
+        .add-btn {
+            background: #d2e7f5;
+            border: none;
+            border-radius: 32px;
+            padding: 5px 18px;
+            font-size: 13px;
+            color: #176079;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            width: fit-content;
+            margin-top: 6px;
+        }
+        .add-btn:hover { background: #c1def0; }
+
+        .period-list, .sport-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .period-row textarea, .sport-row input {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: 24px;
+            border: 1px solid #d7e8f3;
+            background: rgba(245, 251, 255, 0.7);
+            font-size: 14px;
+            outline: none;
+            resize: vertical;
+            min-height: 50px;
+            line-height: 1.5;
+            font-family: inherit;
+            color: #1a5068;
+        }
+        .period-row textarea:focus, .sport-row input:focus {
+            border-color: #99c7e0;
+            background: #f0f9ff;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(161, 192, 212, 0.5);
+            backdrop-filter: blur(3px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+            visibility: hidden;
+            opacity: 0;
+            transition: 0.15s;
+        }
+        .modal-overlay.active {
+            visibility: visible;
+            opacity: 1;
+        }
+        .modal-box {
+            background: #f3faff;
+            border-radius: 46px;
+            padding: 28px 34px;
+            max-width: 470px;
+            width: 90%;
+            box-shadow: 0 20px 30px rgba(72, 123, 150, 0.15);
+            border: 1px solid #d1e6f3;
+        }
+        .modal-box h3 {
+            color: #1b5b76;
+            font-weight: 400;
+            margin-bottom: 20px;
+            font-size: 21px;
+        }
+        .modal-options {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+        .modal-options label {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #e2f0f9;
+            padding: 10px 18px;
+            border-radius: 49px;
+            font-size: 15px;
+            color: #144d65;
+            cursor: pointer;
+        }
+        .modal-options input[type="radio"] {
+            accent-color: #4892b3;
+            width: 18px;
+            height: 18px;
+        }
+        .date-range-inputs {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin: 6px 0 0 32px;
+        }
+        .date-range-inputs input {
+            padding: 6px 14px;
+            border-radius: 31px;
+            border: 1px solid #bed7ea;
+            background: white;
+        }
+        .modal-actions {
+            display: flex;
+            gap: 14px;
+            justify-content: flex-end;
+        }
+        .modal-actions button {
+            padding: 8px 30px;
+            border-radius: 36px;
+            border: none;
+            background: #c3dff0;
+            font-size: 15px;
+            color: #135069;
+            cursor: pointer;
+        }
+        .modal-actions button.confirm {
+            background: #92c5de;
+            color: white;
+        }
+
+        /* Token Modal 微调 */
+        #tokenModal .modal-box p {
+            font-size: 13px;
+            color: #457;
+            margin-bottom: 16px;
+            line-height: 1.6;
+        }
+        #tokenModal a {
+            color: #217998;
+            text-decoration: none;
+        }
+        #tokenModal a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 840px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            .left-column {
+                order: 2;
+            }
+            .right-panel {
+                order: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="app-wrapper">
+    <div class="header-bar">
+        <h1><i class="fas fa-calendar-check"></i> 日程记录</h1>
+        <div class="action-btns">
+            <button class="btn-save" id="saveBtn"><i class="fas fa-save"></i> 一键保存</button>
+            <span class="save-status" id="saveStatus">已保存</span>
+            <button class="btn-export" id="exportBtn"><i class="fas fa-download"></i> 一键导出</button>
+        </div>
+    </div>
+
+    <div class="dashboard">
+        <!-- 左侧栏：日历 + 喝水 + 三餐 -->
+        <div class="left-column">
+            <div class="card calendar-card">
+                <div class="calendar-header">
+                    <span class="month-year" id="monthYearDisplay">2026年 7月</span>
+                    <div class="calendar-nav">
+                        <button id="prevMonth"><i class="fas fa-chevron-left"></i></button>
+                        <button id="nextMonth"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                </div>
+                <div class="weekdays">
+                    <span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span>
+                </div>
+                <div class="days-grid" id="daysGrid"></div>
+            </div>
+
+            <div class="card">
+                <div class="card-title"><i class="fas fa-tint"></i> 喝水记录</div>
+                <div class="water-tracker-left">
+                    <div class="water-check-left" id="waterCheckContainer"></div>
+                    <span class="water-count-left" id="waterCountDisplay">0 / 10</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title"><i class="fas fa-utensils"></i> 三餐记录</div>
+                <div class="meal-list-left" id="mealListContainer"></div>
+            </div>
+        </div>
+
+        <!-- 右侧栏：任务 + 分时段 + 运动 -->
+        <div class="right-panel">
+            <div>
+                <div class="card-title"><i class="fas fa-tasks"></i> 固定任务</div>
+                <div class="task-list" id="taskListContainer"></div>
+                <button class="add-btn" id="addTaskBtn"><i class="fas fa-plus"></i> 添加任务</button>
+            </div>
+
+            <div>
+                <div class="card-title"><i class="fas fa-clock"></i> 分时段规划</div>
+                <div class="period-list" id="periodListContainer"></div>
+            </div>
+
+            <div>
+                <div class="card-title"><i class="fas fa-running"></i> 运动记录</div>
+                <div class="sport-list" id="sportListContainer"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Export Modal -->
+<div class="modal-overlay" id="exportModal">
+    <div class="modal-box">
+        <h3><i class="fas fa-file-export"></i> 导出日程记录</h3>
+        <div class="modal-options">
+            <label><input type="radio" name="exportRange" value="today" checked> 导出当日记录</label>
+            <label><input type="radio" name="exportRange" value="range"> 指定日期范围</label>
+            <div class="date-range-inputs" id="dateRangeInputs" style="display:none;">
+                <input type="date" id="startDate">
+                <span>至</span>
+                <input type="date" id="endDate">
+            </div>
+            <label><input type="radio" name="exportRange" value="all"> 导出全部记录</label>
+        </div>
+        <div class="modal-actions">
+            <button id="cancelExport">取消</button>
+            <button class="confirm" id="confirmExport">确认导出</button>
+        </div>
+    </div>
+</div>
+
+<script>
+(function() {
+    // ========== Gist 同步配置 ==========
+    const GIST_ID = 'c9b52465d580c277cb7e55ac9e589ed4';
+    const GIST_FILENAME = 'mydaily.json';
+    const TOKEN_KEY = 'gh_gist_token';
+    const STORE_KEY = 'schedule_records_store_v4';
+
+    function getToken() {
+        return localStorage.getItem(TOKEN_KEY) || '';
+    }
+
+    async function fetchFromGist() {
+        const token = getToken();
+        if (!token) return null;
+        try {
+            const res = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
+                headers: {
+                    'Accept': 'application/vnd.github+json',
+                    'Authorization': `Bearer ${token}`,
+                    'X-GitHub-Api-Version': '2026-03-10'
+                }
+            });
+            if (!res.ok) throw new Error(`Gist 读取失败: ${res.status}`);
+            const data = await res.json();
+            const file = data.files[GIST_FILENAME];
+            if (!file || !file.content) return null;
+            return JSON.parse(file.content);
+        } catch (e) {
+            console.error('从 Gist 同步失败:', e);
+            return null;
+        }
+    }
+
+    let gistSaveTimer = null;
+    async function saveToGist(storeObj) {
+        const token = getToken();
+        if (!token) return;
+        clearTimeout(gistSaveTimer);
+        gistSaveTimer = setTimeout(async () => {
+            try {
+                const res = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Accept': 'application/vnd.github+json',
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                        'X-GitHub-Api-Version': '2026-03-10'
+                    },
+                    body: JSON.stringify({
+                        files: {
+                            [GIST_FILENAME]: {
+                                content: JSON.stringify(storeObj)
+                            }
+                        }
+                    })
+                });
+                if (!res.ok) throw new Error(`Gist 写入失败: ${res.status}`);
+                console.log('已同步到 Gist');
+            } catch (e) {
+                console.error('保存到 Gist 失败:', e);
+                alert('同步到 Gist 失败，请检查 token 是否有效。\n错误: ' + e.message);
+            }
+        }, 800);
+    }
+
+    // ========== Token 弹窗 ==========
+    function showTokenModal() {
+        const overlay = document.createElement('div');
+        overlay.className = 'modal-overlay active';
+        overlay.id = 'tokenModal';
+        overlay.innerHTML = `
+            <div class="modal-box">
+                <h3><i class="fas fa-key"></i> 输入 GitHub Token 以启用多端同步</h3>
+                <p>
+                    在 GitHub → Settings → Developer settings → Personal access tokens 生成，<br>
+                    只需勾选 <b>gist</b> 权限。<a href="https://github.com/settings/tokens/new" target="_blank">去创建 →</a>
+                </p>
+                <input type="password" id="tokenInput" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
+                    style="width:100%;padding:10px 14px;border-radius:12px;border:1px solid #d7e8f3;font-size:14px;outline:none;margin-bottom:12px;" />
+                <div style="font-size:12px;color:#888;margin-bottom:16px;">
+                    ⚠️ Token 仅保存在本浏览器 localStorage 中，不会上传到任何第三方服务器。
+                </div>
+                <div class="modal-actions">
+                    <button id="tokenCancel">暂不启用</button>
+                    <button class="confirm" id="tokenConfirm">保存并同步</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+
+        document.getElementById('tokenCancel').onclick = () => {
+            overlay.remove();
+            bootstrapApp(false);
+        };
+        document.getElementById('tokenConfirm').onclick = async () => {
+            const val = document.getElementById('tokenInput').value.trim();
+            if (!val) { alert('请输入 token'); return; }
+            localStorage.setItem(TOKEN_KEY, val);
+            overlay.remove();
+            const remote = await fetchFromGist();
+            if (remote) {
+                localStorage.setItem(STORE_KEY, JSON.stringify(remote));
+                alert('已从 Gist 同步数据！');
+            } else {
+                alert('Token 验证失败或 Gist 为空，将使用本地数据。');
+            }
+            bootstrapApp(true);
+        };
+    }
+
+    // ========== 原应用逻辑（完整保留） ==========
+    function bootstrapApp(synced = false) {
+        const STORE_KEY_LOCAL = STORE_KEY;
+
+        function defaultData() {
+            return { 
+                tasks: ['晨间阅读', '整理桌面'], 
+                meals: ['早餐：牛奶+面包', '午餐：蔬菜沙拉', '晚餐：粥'], 
+                periods: ['9:00-12:00 项目A', '13:30-18:00 学习', '19:00-20:00 散步', '20:00-22:00 休闲'], 
+                sports: ['跑步 30min'], 
+                water: 0, 
+                taskDone: [false, false] 
+            };
+        }
+
+        function loadStore() {
+            try {
+                const raw = localStorage.getItem(STORE_KEY_LOCAL);
+                if (raw) {
+                    const obj = JSON.parse(raw);
+                    Object.keys(obj).forEach(k => {
+                        const d = obj[k];
+                        if (!Array.isArray(d.tasks)) d.tasks = [];
+                        if (!Array.isArray(d.meals)) d.meals = [];
+                        if (!Array.isArray(d.periods)) d.periods = [];
+                        if (!Array.isArray(d.sports)) d.sports = [];
+                        if (typeof d.water !== 'number') d.water = 0;
+                        if (!Array.isArray(d.taskDone)) d.taskDone = new Array(d.tasks.length).fill(false);
+                        while (d.taskDone.length < d.tasks.length) d.taskDone.push(false);
+                    });
+                    return obj;
+                }
+            } catch(e) { 
+                console.error("Load error:", e); 
+            }
+            
+            const init = {};
+            init[getTodayKey()] = defaultData();
+            return init;
+        }
+
+        let store = loadStore();
+        
+        function saveStore() { 
+            localStorage.setItem(STORE_KEY_LOCAL, JSON.stringify(store));
+            showSaveStatus();
+            saveToGist(store); // ✅ 同步到 Gist
+        }
+
+        function getTodayKey() {
+            const t = new Date();
+            return `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}-${String(t.getDate()).padStart(2,'0')}`;
+        }
+
+        function getSelectedKey() {
+            const s = selectedDate;
+            return `${s.getFullYear()}-${String(s.getMonth()+1).padStart(2,'0')}-${String(s.getDate()).padStart(2,'0')}`;
+        }
+
+        function ensureData(key) {
+            if (!store[key]) {
+                store[key] = JSON.parse(JSON.stringify(defaultData()));
+                saveStore();
+            }
+            const d = store[key];
+            if (!Array.isArray(d.taskDone)) d.taskDone = new Array(d.tasks.length).fill(false);
+            while (d.taskDone.length < d.tasks.length) d.taskDone.push(false);
+            return d;
+        }
+
+        function getCurrentData() {
+            return ensureData(getSelectedKey());
+        }
+
+        let currentDisplayYear, currentDisplayMonth;
+        let selectedDate = new Date();
+        let todayDate = new Date();
+
+        const monthYearDisplay = document.getElementById('monthYearDisplay');
+        const daysGrid = document.getElementById('daysGrid');
+
+        function renderCalendar() {
+            if (currentDisplayYear === undefined) {
+                const n = new Date();
+                currentDisplayYear = n.getFullYear();
+                currentDisplayMonth = n.getMonth();
+            }
+            monthYearDisplay.innerText = `${currentDisplayYear}年 ${currentDisplayMonth+1}月`;
+            const firstDay = new Date(currentDisplayYear, currentDisplayMonth, 1).getDay();
+            const daysInMonth = new Date(currentDisplayYear, currentDisplayMonth+1, 0).getDate();
+            const prevMonthDays = new Date(currentDisplayYear, currentDisplayMonth, 0).getDate();
+            
+            let html = '';
+            for (let i = firstDay-1; i>=0; i--) {
+                html += `<div class="day-cell other-month" data-y="${currentDisplayYear}" data-m="${currentDisplayMonth-1}" data-d="${prevMonthDays-i}">${prevMonthDays-i}</div>`;
+            }
+            for (let d=1; d<=daysInMonth; d++) {
+                const isToday = (currentDisplayYear===todayDate.getFullYear() && currentDisplayMonth===todayDate.getMonth() && d===todayDate.getDate());
+                const isSel = (currentDisplayYear===selectedDate.getFullYear() && currentDisplayMonth===selectedDate.getMonth() && d===selectedDate.getDate());
+                let cls = 'day-cell';
+                if (isToday) cls += ' today';
+                if (isSel) cls += ' selected';
+                html += `<div class="${cls}" data-y="${currentDisplayYear}" data-m="${currentDisplayMonth}" data-d="${d}">${d}</div>`;
+            }
+            const totalCells = Math.ceil((firstDay+daysInMonth)/7)*7;
+            const remaining = totalCells - (firstDay+daysInMonth);
+            for (let d=1; d<=remaining; d++) {
+                html += `<div class="day-cell other-month" data-y="${currentDisplayYear}" data-m="${currentDisplayMonth+1}" data-d="${d}">${d}</div>`;
+            }
+            daysGrid.innerHTML = html;
+        }
+
+        function renderRight() {
+            const data = getCurrentData();
+            
+            const taskC = document.getElementById('taskListContainer');
+            taskC.innerHTML = '';
+            data.tasks.forEach((t, idx) => {
+                const done = data.taskDone[idx];
+                const row = document.createElement('div');
+                row.className = 'task-row';
+                row.innerHTML = `
+                    <i class="task-check ${done ? 'fa-solid' : 'fa-regular'} fa-circle-check" data-idx="${idx}"></i>
+                    <input type="text" class="task-text" value="${escapeHtml(t)}" data-idx="${idx}" />
+                    <button class="delete-task" data-idx="${idx}"><i class="fas fa-times"></i></button>
+                `;
+                taskC.appendChild(row);
+            });
+
+            const periodC = document.getElementById('periodListContainer');
+            periodC.innerHTML = '';
+            data.periods.forEach((p, idx) => {
+                const row = document.createElement('div'); 
+                row.className = 'period-row';
+                row.innerHTML = `<textarea data-idx="${idx}" class="period-input">${escapeHtml(p)}</textarea>`;
+                periodC.appendChild(row);
+            });
+
+            const sportC = document.getElementById('sportListContainer');
+            sportC.innerHTML = '';
+            data.sports.forEach((s, idx) => {
+                const row = document.createElement('div'); 
+                row.className = 'sport-row';
+                row.innerHTML = `<input type="text" value="${escapeHtml(s)}" data-idx="${idx}" class="sport-input"/>`;
+                sportC.appendChild(row);
+            });
+        }
+
+        function renderLeft() {
+            const data = getCurrentData();
+            
+            const waterC = document.getElementById('waterCheckContainer');
+            waterC.innerHTML = '';
+            for (let i=0; i<10; i++) {
+                const span = document.createElement('span');
+                const filled = i < data.water;
+                span.innerHTML = `200ml <i class="${filled ? 'fa-solid' : 'fa-regular'} fa-circle-check water-toggle" data-idx="${i}"></i>`;
+                waterC.appendChild(span);
+            }
+            document.getElementById('waterCountDisplay').innerText = `${data.water} / 10`;
+
+            const mealC = document.getElementById('mealListContainer');
+            mealC.innerHTML = '';
+            data.meals.forEach((m, idx) => {
+                const row = document.createElement('div'); 
+                row.className = 'meal-row-left';
+                row.innerHTML = `<input type="text" value="${escapeHtml(m)}" data-idx="${idx}" class="meal-input"/>`;
+                mealC.appendChild(row);
+            });
+        }
+        
+        function refreshUI() {
+            renderCalendar();
+            renderRight();
+            renderLeft();
+            bindInputEvents();
+        }
+
+        function selectDate(y,m,d) {
+            selectedDate = new Date(y,m,d);
+            ensureData(getSelectedKey());
+            refreshUI();
+        }
+
+        function bindInputEvents() {
+            document.querySelectorAll('.task-check').forEach(icon => {
+                icon.onclick = function() {
+                    const idx = parseInt(this.dataset.idx);
+                    const data = getCurrentData();
+                    data.taskDone[idx] = !data.taskDone[idx];
+                    saveStore();
+                    refreshUI();
+                };
+            });
+            
+            document.querySelectorAll('.delete-task').forEach(btn => {
+                btn.onclick = function() {
+                    const idx = parseInt(this.dataset.idx);
+                    const data = getCurrentData();
+                    if (data.tasks.length > 1) {
+                        data.tasks.splice(idx, 1);
+                        data.taskDone.splice(idx, 1);
+                        saveStore();
+                        refreshUI();
+                    }
+                };
+            });
+
+            document.querySelectorAll('.task-text').forEach(input => {
+                input.oninput = function() {
+                    const idx = parseInt(this.dataset.idx);
+                    const data = getCurrentData();
+                    data.tasks[idx] = this.value;
+                    clearTimeout(this.saveTimer);
+                    this.saveTimer = setTimeout(() => saveStore(), 500);
+                };
+            });
+
+            document.querySelectorAll('.meal-input').forEach(input => {
+                input.oninput = function() {
+                    const idx = parseInt(this.dataset.idx);
+                    const data = getCurrentData();
+                    data.meals[idx] = this.value;
+                    clearTimeout(this.saveTimer);
+                    this.saveTimer = setTimeout(() => saveStore(), 500);
+                };
+            });
+
+            document.querySelectorAll('.period-input').forEach(textarea => {
+                textarea.oninput = function() {
+                    const idx = parseInt(this.dataset.idx);
+                    const data = getCurrentData();
+                    data.periods[idx] = this.value;
+                    clearTimeout(this.saveTimer);
+                    this.saveTimer = setTimeout(() => saveStore(), 500);
+                };
+            });
+
+            document.querySelectorAll('.sport-input').forEach(input => {
+                input.oninput = function() {
+                    const idx = parseInt(this.dataset.idx);
+                    const data = getCurrentData();
+                    data.sports[idx] = this.value;
+                    clearTimeout(this.saveTimer);
+                    this.saveTimer = setTimeout(() => saveStore(), 500);
+                };
+            });
+
+            document.querySelectorAll('.water-toggle').forEach(icon => {
+                icon.onclick = function() {
+                    const idx = parseInt(this.dataset.idx);
+                    const data = getCurrentData();
+                    if (this.classList.contains('fa-regular')) {
+                        data.water = Math.max(data.water, idx + 1);
+                    } else {
+                        if (data.water > idx) data.water = idx;
+                    }
+                    if (data.water > 10) data.water = 10;
+                    saveStore();
+                    refreshUI();
+                };
+            });
+        }
+
+        function initEvents() {
+            document.getElementById('prevMonth').onclick = () => {
+                currentDisplayMonth--; 
+                if (currentDisplayMonth < 0) {
+                    currentDisplayMonth = 11;
+                    currentDisplayYear--;
+                }
+                renderCalendar();
+            };
+            
+            document.getElementById('nextMonth').onclick = () => {
+                currentDisplayMonth++;
+                if (currentDisplayMonth > 11) {
+                    currentDisplayMonth = 0;
+                    currentDisplayYear++;
+                }
+                renderCalendar();
+            };
+            
+            daysGrid.onclick = (e) => {
+                const cell = e.target.closest('.day-cell');
+                if (!cell) return;
+                const y = parseInt(cell.dataset.y);
+                const m = parseInt(cell.dataset.m);
+                const d = parseInt(cell.dataset.d);
+                if (!isNaN(y)) { 
+                    currentDisplayYear = y; 
+                    currentDisplayMonth = m; 
+                    selectDate(y, m, d); 
+                }
+            };
+
+            document.getElementById('addTaskBtn').onclick = () => {
+                const data = getCurrentData();
+                data.tasks.push('新任务');
+                data.taskDone.push(false);
+                saveStore();
+                refreshUI();
+                setTimeout(() => {
+                    const inputs = document.querySelectorAll('.task-text');
+                    if (inputs.length > 0) {
+                        inputs[inputs.length - 1].focus();
+                    }
+                }, 100);
+            };
+
+            document.getElementById('saveBtn').onclick = () => {
+                saveStore();
+            };
+
+            document.getElementById('exportBtn').onclick = () => {
+                document.getElementById('exportModal').classList.add('active');
+            };
+            
+            document.getElementById('cancelExport').onclick = () => {
+                document.getElementById('exportModal').classList.remove('active');
+            };
+            
+            document.querySelectorAll('input[name="exportRange"]').forEach(el => {
+                el.onchange = () => {
+                    document.getElementById('dateRangeInputs').style.display = 
+                        el.value === 'range' ? 'flex' : 'none';
+                };
+            });
+            
+            document.getElementById('confirmExport').onclick = performExport;
+        }
+
+        function performExport() {
+            const mode = document.querySelector('input[name="exportRange"]:checked').value;
+            let lines = [];
+            const header = '=== 日程记录 ===\n';
+            
+            if (mode === 'today') {
+                const key = getSelectedKey();
+                lines.push(`日期: ${key}`);
+                lines.push(...formatData(store[key]));
+            } else if (mode === 'all') {
+                Object.keys(store).sort().forEach(k => {
+                    lines.push(`日期: ${k}`);
+                    lines.push(...formatData(store[k]));
+                    lines.push('---');
+                });
+            } else if (mode === 'range') {
+                const start = new Date(document.getElementById('startDate').value);
+                const end = new Date(document.getElementById('endDate').value);
+                if (start > end) {
+                    alert('开始日期不能晚于结束日期');
+                    return;
+                }
+                Object.keys(store).filter(k => {
+                    const d = new Date(k);
+                    return d >= start && d <= end;
+                }).sort().forEach(k => {
+                    lines.push(`日期: ${k}`);
+                    lines.push(...formatData(store[k]));
+                    lines.push('---');
+                });
+            }
+            
+            const content = header + lines.join('\n');
+            const blob = new Blob([content], {type: 'text/plain;charset=utf-8'});
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `日程记录_${new Date().toISOString().slice(0,10)}.txt`;
+            a.click();
+            URL.revokeObjectURL(a.href);
+            document.getElementById('exportModal').classList.remove('active');
+        }
+
+        function formatData(d) {
+            if (!d) return ['(无记录)'];
+            const result = [];
+            if (d.tasks?.length) {
+                result.push('【固定任务】' + d.tasks.map((t, i) => `${d.taskDone[i] ? '✓' : '○'} ${t}`).join(', '));
+            }
+            if (d.meals?.length) {
+                result.push('【三餐】' + d.meals.join(' | '));
+            }
+            if (d.periods?.length) {
+                result.push('【分时段】' + d.periods.join(' ; '));
+            }
+            if (d.sports?.length) {
+                result.push('【运动】' + d.sports.join(', '));
+            }
+            result.push(`【喝水】${d.water || 0}/10 杯`);
+            return result;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function showSaveStatus() {
+            const status = document.getElementById('saveStatus');
+            status.classList.add('show');
+            setTimeout(() => status.classList.remove('show'), 1500);
+        }
+
+        function init() {
+            const now = new Date();
+            currentDisplayYear = now.getFullYear();
+            currentDisplayMonth = now.getMonth();
+            selectedDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            todayDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            
+            ensureData(getTodayKey());
+            
+            refreshUI();
+            initEvents();
+        }
+        
+        init();
+    }
+
+    // ========== 启动入口 ==========
+    if (getToken()) {
+        fetchFromGist().then(remote => {
+            if (remote) {
+                localStorage.setItem(STORE_KEY, JSON.stringify(remote));
+                console.log('已从 Gist 同步');
+            }
+            bootstrapApp(true);
+        });
+    } else {
+        showTokenModal();
+    }
+})();
+</script>
+</body>
+</html>
