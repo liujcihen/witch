@@ -1,0 +1,1419 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>臣臣子的奇幻冒险 - 见习女巫</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            /* 新的浅蓝色系配色 */
+            --primary-blue: #e6f2ff;
+            --secondary-blue: #cce7ff;
+            --accent-blue: #a3d5ff;
+            --soft-blue: #b8daff;
+            --pale-blue: #f0f8ff;
+            --lightest-blue: #f8fbff;
+            
+            /* 中性色 */
+            --text-dark: #4a5568;
+            --text-light: #718096;
+            --text-lighter: #a0aec0;
+            --white: #ffffff;
+            
+            /* 卡片和阴影 */
+            --card-bg: rgba(255, 255, 255, 0.65);
+            --card-border: rgba(255, 255, 255, 0.4);
+            --shadow-sm: 0 2px 8px rgba(174, 200, 236, 0.1);
+            --shadow-md: 0 4px 12px rgba(174, 200, 236, 0.15);
+            --shadow-lg: 0 8px 24px rgba(174, 200, 236, 0.25);
+            --radius-sm: 10px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            
+            /* 边框 */
+            --border-light: 1px solid rgba(226, 232, 240, 0.3);
+        }
+
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+            font-family: 'Noto Sans SC', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif; 
+        }
+
+        body {
+            background-color: var(--primary-blue);
+            background-image: url('');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            padding: 20px;
+            color: var(--text-dark);
+            font-size: 14px;
+            line-height: 1.6;
+            transition: background-image 0.5s ease;
+        }
+
+        .container { 
+            max-width: 1400px; 
+            margin: 0 auto; 
+            position: relative;
+        }
+
+        /* 头部样式 - 韩系博客风格 */
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px 20px 15px 140px;
+            background: transparent;
+            border-radius: 0;
+            box-shadow: none;
+            position: relative;
+            overflow: visible;
+            backdrop-filter: none;
+            border: none;
+        }
+        
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: var(--accent-blue);
+            border-radius: 2px;
+        }
+        
+        .header h1 {
+            color: var(--text-dark);
+            font-size: 2em;
+            margin-bottom: 8px;
+            font-weight: 300;
+            letter-spacing: 2px;
+            font-family: 'Noto Serif SC', serif;
+        }
+        
+        .header p { 
+            color: var(--text-light); 
+            font-size: 0.9em;
+            font-weight: 400;
+            letter-spacing: 1px;
+        }
+        
+        .date-display {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 0.8em;
+            color: var(--text-light);
+            background: transparent;
+            padding: 0;
+            border-radius: 0;
+            border: none;
+        }
+
+        /* 头像区域 */
+        .avatar-section {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 100px;
+            height: 100px;
+            z-index: 10;
+        }
+        
+        .avatar-container {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            overflow: hidden;
+            background: var(--pale-blue);
+            border: 3px solid var(--white);
+            box-shadow: var(--shadow-sm);
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .avatar-container:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .avatar-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none;
+        }
+        
+        .avatar-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-blue);
+            font-size: 2.2em;
+            background: linear-gradient(135deg, var(--secondary-blue), var(--pale-blue));
+        }
+        
+        .avatar-input {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+            z-index: 20;
+            top: 0;
+            left: 0;
+        }
+        
+        .avatar-label {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            background: var(--accent-blue);
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8em;
+            box-shadow: var(--shadow-sm);
+            border: 2px solid var(--white);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 30;
+        }
+        
+        .avatar-label:hover {
+            background: var(--soft-blue);
+            transform: scale(1.1);
+        }
+
+        /* 背景上传按钮 */
+        .bg-upload-btn {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--accent-blue), var(--soft-blue));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2em;
+            box-shadow: var(--shadow-md);
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 100;
+            border: none;
+        }
+        
+        .bg-upload-btn:hover {
+            transform: scale(1.1);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .bg-input {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        /* 仪表盘网格 */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 24px;
+        }
+        
+        @media (max-width: 1200px) { 
+            .dashboard-grid { 
+                grid-template-columns: repeat(3, 1fr); 
+            } 
+        }
+        
+        @media (max-width: 900px) { 
+            .dashboard-grid { 
+                grid-template-columns: repeat(2, 1fr); 
+            } 
+        }
+        
+        @media (max-width: 600px) { 
+            .dashboard-grid { 
+                grid-template-columns: 1fr; 
+            } 
+        }
+
+        /* 卡片样式 */
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--radius-md);
+            padding: 12px 15px;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: var(--border-light);
+            border-left: none;
+            display: flex;
+            flex-direction: column;
+            min-height: 110px;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(8px);
+        }
+        
+        .card:hover { 
+            transform: translateY(-3px); 
+            box-shadow: var(--shadow-md);
+            background: rgba(255, 255, 255, 0.75);
+        }
+        
+        .card-header { 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            margin-bottom: 10px; 
+        }
+        
+        .card-title { 
+            font-size: 0.95em; 
+            font-weight: 600; 
+            color: var(--text-dark); 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+        }
+        
+        .card-icon { 
+            font-size: 0.9em; 
+            width: 32px; 
+            height: 32px; 
+            background: linear-gradient(135deg, var(--accent-blue), var(--soft-blue)); 
+            border-radius: 8px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            color: white;
+            box-shadow: 0 2px 6px rgba(163, 213, 255, 0.2);
+        }
+        
+        .card-link { 
+            color: var(--text-lighter); 
+            font-size: 0.8em; 
+            transition: color 0.2s;
+            padding: 3px 6px;
+            border-radius: 4px;
+        }
+        
+        .card-link:hover { 
+            color: var(--accent-blue);
+            background: rgba(163, 213, 255, 0.1);
+        }
+        
+        .card-content { 
+            flex: 1; 
+        }
+        
+        .card-footer { 
+            margin-top: 10px; 
+            padding-top: 8px; 
+            border-top: var(--border-light); 
+            font-size: 0.7em; 
+            color: var(--text-lighter); 
+            font-weight: 500;
+        }
+
+        .finance-card,
+        .weight-card,
+        .sleep-card,
+        .items-card,
+        .books-card,
+        .weather-card,
+        .tasks-card,
+        .ideas-card {
+            border-left: none;
+        }
+
+        /* 各卡片内容样式 */
+        .finance-balance { 
+            font-size: 1.3em; 
+            font-weight: 700; 
+            color: #7ed6df; 
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+        
+        .budget-bar { 
+            height: 6px; 
+            background: rgba(255, 255, 255, 0.5); 
+            border-radius: 3px; 
+            overflow: hidden; 
+            margin-bottom: 4px; 
+        }
+        
+        .budget-fill { 
+            height: 100%; 
+            background: linear-gradient(90deg, #7ed6df, #70a1ff); 
+            border-radius: 3px; 
+            transition: width 0.5s ease; 
+        }
+        
+        .budget-text { 
+            font-size: 0.8em; 
+            color: var(--text-light); 
+            font-weight: 500;
+        }
+
+        .weight-value { 
+            font-size: 1.3em; 
+            font-weight: 700; 
+            color: #a4b0be; 
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+        
+        .weight-diff { 
+            font-size: 0.8em; 
+            padding: 3px 8px; 
+            border-radius: 10px; 
+            display: inline-block; 
+            font-weight: 500;
+        }
+        
+        .diff-up { background: rgba(255, 107, 129, 0.1); color: #ff6b81; }
+        .diff-down { background: rgba(29, 209, 161, 0.1); color: #1dd1a1; }
+        .diff-even { background: rgba(160, 174, 192, 0.1); color: #a0aec0; }
+        
+        .sleep-duration { 
+            font-size: 1.2em; 
+            font-weight: 700; 
+            color: #70a1ff; 
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+        
+        .sleep-quality { 
+            font-size: 0.8em; 
+            padding: 3px 8px; 
+            border-radius: 10px; 
+            display: inline-block; 
+            font-weight: 500;
+        }
+        
+        .quality-good { background: rgba(29, 209, 161, 0.1); color: #1dd1a1; }
+        .quality-normal { background: rgba(255, 159, 67, 0.1); color: #ff9f43; }
+        .quality-bad { background: rgba(255, 107, 129, 0.1); color: #ff6b81; }
+
+        .expiring-item, .washing-item { 
+            font-size: 0.8em; 
+            padding: 6px 8px; 
+            margin-bottom: 4px; 
+            border-radius: 6px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            font-weight: 500;
+        }
+        
+        .reading-book { 
+            margin-bottom: 8px; 
+            padding-bottom: 8px; 
+            border-bottom: var(--border-light); 
+        }
+        
+        .book-title { 
+            font-weight: 600; 
+            font-size: 0.85em; 
+            margin-bottom: 4px; 
+            overflow: hidden; 
+            text-overflow: ellipsis; 
+            white-space: nowrap; 
+            color: var(--text-dark);
+        }
+        
+        .book-progress { 
+            font-size: 0.75em; 
+            color: var(--text-light); 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
+        
+        .progress-mini { 
+            flex: 1; 
+            height: 4px; 
+            background: rgba(255, 255, 255, 0.5); 
+            border-radius: 2px; 
+            overflow: hidden; 
+            margin: 0 8px; 
+        }
+        
+        .progress-mini-fill { 
+            height: 100%; 
+            background: linear-gradient(90deg, #ff9f43, #ffaf60); 
+            border-radius: 2px; 
+        }
+
+        .weather-temp { 
+            font-size: 1.6em; 
+            font-weight: 700; 
+            color: #1dd1a1; 
+            letter-spacing: -0.5px;
+        }
+        
+        .weather-icon { 
+            font-size: 2.2em; 
+        }
+        
+        .weather-desc { 
+            font-size: 0.85em; 
+            color: var(--text-light); 
+            margin-bottom: 8px; 
+            font-weight: 500;
+        }
+        
+        .weather-details { 
+            display: flex; 
+            justify-content: space-between; 
+            font-size: 0.75em; 
+            color: var(--text-light); 
+            font-weight: 500;
+        }
+
+        .task-item { 
+            display: flex; 
+            align-items: center; 
+            margin-bottom: 6px; 
+            padding: 6px; 
+            background: rgba(255, 159, 67, 0.05); 
+            border-radius: 6px; 
+            transition: background 0.2s; 
+        }
+        
+        .task-checkbox { 
+            width: 16px; 
+            height: 16px; 
+            border: 2px solid #ff9f43; 
+            border-radius: 4px; 
+            margin-right: 8px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            flex-shrink: 0; 
+            cursor: pointer; 
+            transition: all 0.2s;
+        }
+        
+        .task-text { 
+            flex: 1; 
+            font-size: 0.8em; 
+            overflow: hidden; 
+            text-overflow: ellipsis; 
+            white-space: nowrap; 
+            font-weight: 500;
+        }
+        
+        .task-text.completed { 
+            text-decoration: line-through; 
+            color: var(--text-lighter); 
+        }
+        
+        .task-priority { 
+            width: 8px; 
+            height: 8px; 
+            border-radius: 50%; 
+            flex-shrink: 0; 
+        }
+        
+        .priority-high { background: #ff6b81; }
+        .priority-medium { background: #ff9f43; }
+        .priority-low { background: #1dd1a1; }
+
+        .idea-item { 
+            margin-bottom: 8px; 
+            padding: 8px; 
+            background: rgba(155, 124, 255, 0.05); 
+            border-radius: 6px; 
+        }
+        
+        .idea-content { 
+            font-size: 0.8em; 
+            line-height: 1.4; 
+            margin-bottom: 4px; 
+            display: -webkit-box; 
+            -webkit-line-clamp: 2; 
+            -webkit-box-orient: vertical; 
+            overflow: hidden; 
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+        
+        .idea-tags { 
+            display: flex; 
+            gap: 4px; 
+            flex-wrap: wrap; 
+        }
+        
+        .idea-tag { 
+            font-size: 0.65em; 
+            padding: 2px 6px; 
+            border-radius: 8px; 
+            background: rgba(155, 124, 255, 0.1); 
+            color: #9b7cff; 
+            font-weight: 500;
+        }
+        
+        .idea-date { 
+            font-size: 0.65em; 
+            color: var(--text-lighter); 
+            font-weight: 500;
+            margin-top: 4px;
+        }
+
+        .empty-state { 
+            text-align: center; 
+            padding: 15px; 
+            color: var(--text-lighter); 
+            font-size: 0.8em; 
+        }
+        
+        .empty-state i { 
+            font-size: 1.5em; 
+            margin-bottom: 8px; 
+            opacity: 0.5; 
+        }
+
+        .footer { 
+            text-align: center; 
+            padding: 15px; 
+            color: var(--text-light); 
+            font-size: 0.75em; 
+            background: transparent; 
+            border-radius: 0; 
+            box-shadow: none; 
+            border: none;
+            backdrop-filter: none;
+        }
+
+        .refresh-btn { 
+            position: fixed; 
+            bottom: 20px; 
+            right: 20px; 
+            width: 50px; 
+            height: 50px; 
+            background: linear-gradient(135deg, var(--accent-blue), var(--soft-blue)); 
+            border-radius: 50%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            color: white; 
+            font-size: 1.2em; 
+            box-shadow: var(--shadow-md); 
+            cursor: pointer; 
+            transition: all 0.3s; 
+            z-index: 100; 
+            border: none;
+        }
+        
+        .refresh-btn:hover { 
+            transform: rotate(180deg) scale(1.1); 
+            box-shadow: var(--shadow-lg); 
+        }
+
+        /* API Key 设置弹窗 */
+        .apikey-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+        
+        .apikey-overlay.hidden {
+            display: none;
+        }
+        
+        .apikey-modal {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 30px;
+            box-shadow: var(--shadow-lg);
+            max-width: 420px;
+            width: 90%;
+            text-align: center;
+        }
+        
+        .apikey-modal h2 {
+            font-size: 1.2em;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .apikey-modal p {
+            font-size: 0.85em;
+            color: var(--text-light);
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        
+        .apikey-input-group {
+            position: relative;
+            margin-bottom: 16px;
+        }
+        
+        .apikey-input-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid rgba(163, 213, 255, 0.3);
+            border-radius: var(--radius-sm);
+            font-size: 0.9em;
+            color: var(--text-dark);
+            background: var(--pale-blue);
+            transition: border-color 0.2s;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+        }
+        
+        .apikey-input-group input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+        }
+        
+        .apikey-input-group input::placeholder {
+            color: var(--text-lighter);
+            font-family: 'Noto Sans SC', sans-serif;
+        }
+        
+        .apikey-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, var(--accent-blue), var(--soft-blue));
+            border: none;
+            border-radius: var(--radius-sm);
+            color: var(--white);
+            font-size: 0.95em;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .apikey-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .apikey-btn:active {
+            transform: translateY(0);
+        }
+        
+        .apikey-hint {
+            font-size: 0.75em;
+            color: var(--text-lighter);
+            margin-top: 12px;
+        }
+        
+        .apikey-change-btn {
+            position: fixed;
+            bottom: 150px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #e8d5ff, #d4b5ff);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.1em;
+            box-shadow: var(--shadow-md);
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 100;
+            border: none;
+        }
+        
+        .apikey-change-btn:hover {
+            transform: scale(1.1);
+            box-shadow: var(--shadow-lg);
+        }
+
+        ::-webkit-scrollbar { 
+            width: 6px; 
+        }
+        
+        ::-webkit-scrollbar-track { 
+            background: transparent; 
+        }
+        
+        ::-webkit-scrollbar-thumb { 
+            background: var(--accent-blue); 
+            border-radius: 3px; 
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--soft-blue);
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 15px 15px 12px 110px;
+            }
+            
+            .avatar-section {
+                width: 85px;
+                height: 85px;
+            }
+            
+            .date-display {
+                position: static;
+                margin-top: 8px;
+                display: inline-block;
+            }
+            
+            .header h1 {
+                font-size: 1.6em;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                padding: 15px;
+            }
+            
+            .header {
+                padding: 15px;
+            }
+            
+            .avatar-section {
+                position: static;
+                transform: none;
+                margin: 0 auto 15px;
+            }
+            
+            .date-display {
+                margin-top: 0;
+            }
+            
+            .header h1 {
+                font-size: 1.4em;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <div class="avatar-section">
+            <div class="avatar-container" id="avatarContainer">
+                <img class="avatar-img" id="avatarImg" src="" alt="头像">
+                <div class="avatar-placeholder" id="avatarPlaceholder">
+                    <i class="fas fa-user"></i>
+                </div>
+                <input type="file" class="avatar-input" id="avatarInput" accept="image/*">
+                <label class="avatar-label" for="avatarInput" title="上传头像">
+                    <i class="fas fa-camera"></i>
+                </label>
+            </div>
+        </div>
+        
+        <div class="date-display" id="currentDate"></div>
+        <h1><i class="fas fa-hat-wizard"></i> 臣臣子的奇幻冒险</h1>
+        <p>星垂平野阔，月涌大江流</p>
+    </div>
+
+    <div class="dashboard-grid">
+        <!-- 金币宝库 -->
+        <div class="card finance-card" onclick="location.href='finance.html'">
+            <div class="card-header">
+                <div class="card-title"><div class="card-icon"><i class="fas fa-coins"></i></div>金币宝库</div>
+                <div class="card-link"><i class="fas fa-arrow-right"></i></div>
+            </div>
+            <div class="card-content">
+                <div class="finance-balance" id="financeBalance">0 🪙</div>
+                <div class="budget-bar"><div class="budget-fill" id="budgetFill" style="width:0%"></div></div>
+                <div class="budget-text" id="budgetText">预算进度：0%</div>
+            </div>
+            <div class="card-footer">点击管理财务</div>
+        </div>
+
+        <!-- 纯银天秤 -->
+        <div class="card weight-card" onclick="location.href='weight.html'">
+            <div class="card-header">
+                <div class="card-title"><div class="card-icon"><i class="fas fa-weight-hanging"></i></div>纯银天秤</div>
+                <div class="card-link"><i class="fas fa-arrow-right"></i></div>
+            </div>
+            <div class="card-content">
+                <div class="weight-value" id="weightValue">-- kg</div>
+                <div id="weightDiffContainer"><span class="weight-diff" id="weightDiff">--</span></div>
+            </div>
+            <div class="card-footer">点击记录体重</div>
+        </div>
+
+        <!-- 夜寐星光 -->
+        <div class="card sleep-card" onclick="location.href='sleep.html'">
+            <div class="card-header">
+                <div class="card-title"><div class="card-icon"><i class="fas fa-moon"></i></div>夜寐星光</div>
+                <div class="card-link"><i class="fas fa-arrow-right"></i></div>
+            </div>
+            <div class="card-content">
+                <div class="sleep-duration" id="sleepDuration">-- 小时</div>
+                <div id="sleepQualityContainer"><span class="sleep-quality" id="sleepQuality">--</span></div>
+            </div>
+            <div class="card-footer">点击记录睡眠</div>
+        </div>
+
+        <!-- 水晶洞穴 -->
+        <div class="card items-card" onclick="location.href='items.html'">
+            <div class="card-header">
+                <div class="card-title"><div class="card-icon"><i class="fas fa-gem"></i></div>水晶洞穴</div>
+                <div class="card-link"><i class="fas fa-arrow-right"></i></div>
+            </div>
+            <div class="card-content" id="itemsContent"></div>
+            <div class="card-footer">点击管理物品</div>
+        </div>
+
+        <!-- 古堡藏书 -->
+        <div class="card books-card" onclick="location.href='books.html'">
+            <div class="card-header">
+                <div class="card-title"><div class="card-icon"><i class="fas fa-book"></i></div>古堡藏书</div>
+                <div class="card-link"><i class="fas fa-arrow-right"></i></div>
+            </div>
+            <div class="card-content" id="booksContent"></div>
+            <div class="card-footer">点击管理书籍</div>
+        </div>
+
+        <!-- 冒险家日报（天气） -->
+        <div class="card weather-card">
+            <div class="card-header">
+                <div class="card-title"><div class="card-icon"><i class="fas fa-cloud-sun"></i></div>冒险家日报</div>
+                <div class="card-link"><i class="fas fa-sync-alt" onclick="event.stopPropagation(); fetchWeather();" style="cursor:pointer" title="刷新天气"></i></div>
+            </div>
+            <div class="card-content" id="weatherContent"></div>
+            <div class="card-footer">武汉市江夏区金港中路</div>
+        </div>
+
+        <!-- 今日任务 -->
+        <div class="card tasks-card" onclick="location.href='journal.html'">
+            <div class="card-header">
+                <div class="card-title"><div class="card-icon"><i class="fas fa-tasks"></i></div>今日任务</div>
+                <div class="card-link"><i class="fas fa-arrow-right"></i></div>
+            </div>
+            <div class="card-content" id="tasksContent"></div>
+            <div class="card-footer">点击前往手账管理任务</div>
+        </div>
+
+        <!-- 灵感手札 -->
+        <div class="card ideas-card" onclick="location.href='ideas.html'">
+            <div class="card-header">
+                <div class="card-title"><div class="card-icon"><i class="fas fa-lightbulb"></i></div>灵感手札</div>
+                <div class="card-link"><i class="fas fa-arrow-right"></i></div>
+            </div>
+            <div class="card-content" id="ideasContent"></div>
+            <div class="card-footer">点击记录灵感</div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>✨ 数据云端同步 | 最后更新：<span id="lastUpdate"></span></p>
+    </div>
+</div>
+
+<!-- API Key 输入弹窗 -->
+<div class="apikey-overlay" id="apiKeyOverlay">
+    <div class="apikey-modal">
+        <h2><i class="fas fa-key"></i> 输入 GitHub Token</h2>
+        <p>请输入你的 GitHub Personal Access Token<br>以连接云端数据库（Gist）</p>
+        <div class="apikey-input-group">
+            <input type="password" id="apiKeyInput" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" autofocus>
+        </div>
+        <button class="apikey-btn" id="apiKeySubmit">连接云端</button>
+        <div class="apikey-hint">Token 仅保存在当前浏览器本地，不会上传至任何服务器</div>
+    </div>
+</div>
+
+<button class="apikey-change-btn" id="apiKeyChangeBtn" title="更换 Token">
+    <i class="fas fa-key"></i>
+</button>
+
+<button class="bg-upload-btn" id="bgUploadBtn" title="上传背景图片">
+    <i class="fas fa-image"></i>
+    <input type="file" class="bg-input" id="bgInput" accept="image/*">
+</button>
+
+<div class="refresh-btn" onclick="updateAllData()" title="刷新所有数据"><i class="fas fa-sync-alt"></i></div>
+
+<script>
+/* ==========================================
+   Gist 云端数据库 —— 替换所有 localStorage
+   ========================================== */
+const GIST_ID = 'c9b52465d580c277cb7e55ac9e589ed4';
+const GIST_FILE = 'witchlife.json';
+
+// 从 localStorage 读取 Token
+function getGistToken() {
+    return localStorage.getItem('witchGistToken') || '';
+}
+
+// 保存 Token 到 localStorage
+function setGistToken(token) {
+    localStorage.setItem('witchGistToken', token.trim());
+}
+
+// 清除 Token
+function clearGistToken() {
+    localStorage.removeItem('witchGistToken');
+}
+
+const GistDB = {
+    /* 从 Gist 拉取并解析 JSON */
+    async load() {
+        const token = getGistToken();
+        try {
+            const headers = {
+                'Accept': 'application/vnd.github.v3+json'
+            };
+            if (token) {
+                headers['Authorization'] = `Bearer ${token}`;
+            }
+            const res = await fetch(`https://api.github.com/gists/${GIST_ID}`, { headers });
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const gist = await res.json();
+            if (gist.files[GIST_FILE]?.content) {
+                return JSON.parse(gist.files[GIST_FILE].content);
+            }
+        } catch (e) {
+            console.warn('Gist 读取失败，返回空对象', e);
+        }
+        // 返回默认结构
+        return {
+            witchFinance: {},
+            witchWeightDB: [],
+            witchSleepDB: [],
+            witchItemsDB: [],
+            witchBooksDB: [],
+            witchJournalTasks: [],
+            witchIdeasDB: [],
+            witchAvatar: '',
+            witchBackground: ''
+        };
+    },
+
+    /* 将整个 data 对象写回 Gist */
+    async save(data) {
+        const token = getGistToken();
+        if (!token) {
+            console.error('未配置 GitHub Token，无法写入 Gist');
+            return false;
+        }
+        try {
+            const res = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
+                method: 'PATCH',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/vnd.github.v3+json'
+                },
+                body: JSON.stringify({
+                    files: {
+                        [GIST_FILE]: {
+                            content: JSON.stringify(data, null, 2)
+                        }
+                    }
+                })
+            });
+            if (!res.ok) {
+                const err = await res.json().catch(() => ({}));
+                throw new Error(err.message || `HTTP ${res.status}`);
+            }
+            return true;
+        } catch (e) {
+            console.error('Gist 写入失败:', e);
+            return false;
+        }
+    },
+
+    /* 便捷方法：读某个 key */
+    async getKey(key) {
+        const data = await this.load();
+        return data[key];
+    },
+
+    /* 便捷方法：写一个 key 并保存 */
+    async setKey(key, value) {
+        const data = await this.load();
+        data[key] = value;
+        return this.save(data);
+    }
+};
+
+/* ========================================== */
+const JOURNAL_PAGE_URL = 'journal.html';
+const JOURNAL_TASKS_KEY = 'witchJournalTasks';
+
+// ===== API Key 弹窗逻辑 =====
+function showApiKeyModal() {
+    document.getElementById('apiKeyOverlay').classList.remove('hidden');
+    document.getElementById('apiKeyInput').focus();
+}
+
+function hideApiKeyModal() {
+    document.getElementById('apiKeyOverlay').classList.add('hidden');
+}
+
+function handleApiKeySubmit() {
+    const input = document.getElementById('apiKeyInput');
+    const token = input.value.trim();
+    if (!token) {
+        input.style.borderColor = '#ff6b81';
+        input.placeholder = '请输入 Token！';
+        return;
+    }
+    if (!token.startsWith('ghp_') && !token.startsWith('github_pat_')) {
+        input.style.borderColor = '#ff9f43';
+        if (!confirm('Token 格式似乎不正确（应以 ghp_ 或 github_pat_ 开头），仍要尝试使用吗？')) {
+            return;
+        }
+    }
+    setGistToken(token);
+    input.style.borderColor = '';
+    hideApiKeyModal();
+    initApp();
+}
+
+// 绑定事件
+document.getElementById('apiKeySubmit').addEventListener('click', handleApiKeySubmit');
+document.getElementById('apiKeyInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') handleApiKeySubmit();
+});
+document.getElementById('apiKeyChangeBtn').addEventListener('click', function() {
+    const current = getGistToken();
+    document.getElementById('apiKeyInput').value = current;
+    showApiKeyModal();
+});
+
+// 头像和背景图片处理
+async function initAvatarAndBg() {
+    // 从 Gist 加载头像和背景
+    const data = await GistDB.load();
+    
+    // 加载头像
+    if (data.witchAvatar) {
+        const avatarImg = document.getElementById('avatarImg');
+        const avatarPlaceholder = document.getElementById('avatarPlaceholder');
+        avatarImg.src = data.witchAvatar;
+        avatarImg.style.display = 'block';
+        avatarPlaceholder.style.display = 'none';
+    }
+    
+    // 加载背景
+    if (data.witchBackground) {
+        document.body.style.backgroundImage = `url(${data.witchBackground})`;
+    }
+    
+    // 头像上传处理
+    const avatarInput = document.getElementById('avatarInput');
+    avatarInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            if (file.size > 500 * 1024) {
+                alert('头像图片不能超过 500KB，请压缩后再试');
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = async function(event) {
+                const avatarImg = document.getElementById('avatarImg');
+                const avatarPlaceholder = document.getElementById('avatarPlaceholder');
+                avatarImg.src = event.target.result;
+                avatarImg.style.display = 'block';
+                avatarPlaceholder.style.display = 'none';
+                await GistDB.setKey('witchAvatar', event.target.result);
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+    
+    // 为背景上传按钮添加点击事件
+    const bgUploadBtn = document.getElementById('bgUploadBtn');
+    const bgInput = document.getElementById('bgInput');
+    bgUploadBtn.addEventListener('click', function() {
+        bgInput.click();
+    });
+    
+    // 背景上传处理
+    bgInput.addEventListener('change', async function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            if (file.size > 800 * 1024) {
+                alert('背景图片不能超过 800KB，请压缩后再试');
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = async function(event) {
+                document.body.style.backgroundImage = `url(${event.target.result})`;
+                await GistDB.setKey('witchBackground', event.target.result);
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+    
+    // 点击头像容器也可以触发上传
+    const avatarContainer = document.getElementById('avatarContainer');
+    avatarContainer.addEventListener('click', function(e) {
+        if (e.target !== avatarInput) {
+            avatarInput.click();
+        }
+    });
+}
+
+function formatDate(date) {
+    const d = new Date(date);
+    return `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日`;
+}
+function formatShortDate(dateStr) {
+    const d = new Date(dateStr);
+    return `${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+/* ---------- 财务 ---------- */
+async function updateFinanceCard() {
+    const data = await GistDB.getKey('witchFinance') || {};
+    const acc = data.accounts || { bank:0, alipay:0, wechat:0 };
+    const total = Object.values(acc).reduce((a,b)=>a+Number(b),0);
+    document.getElementById('financeBalance').textContent = `${total.toFixed(0)} 🪙`;
+    const budgets = data.budgets || [];
+    if (budgets.length) {
+        const lim = budgets.reduce((s,b)=>s+b.limit,0);
+        const sp = budgets.reduce((s,b)=>s+b.spent,0);
+        const pct = lim>0 ? Math.min(100, sp/lim*100) : 0;
+        document.getElementById('budgetFill').style.width = pct+'%';
+        document.getElementById('budgetText').textContent = `预算进度：${pct.toFixed(1)}%`;
+    }
+}
+
+/* ---------- 体重 ---------- */
+async function updateWeightCard() {
+    const data = await GistDB.getKey('witchWeightDB') || [];
+    if (!data.length) return;
+    const sorted = [...data].sort((a,b)=>new Date(b.date)-new Date(a.date));
+    const latest = sorted[0];
+    document.getElementById('weightValue').textContent = `${latest.weight.toFixed(1)} kg`;
+    const diff = latest.diff;
+    const el = document.getElementById('weightDiff');
+    if (diff == null) return;
+    if (diff > 0) { el.textContent = `+${diff.toFixed(1)} kg`; el.className='weight-diff diff-up'; }
+    else if (diff < 0) { el.textContent = `${diff.toFixed(1)} kg`; el.className='weight-diff diff-down'; }
+    else { el.textContent='±0.0 kg'; el.className='weight-diff diff-even'; }
+}
+
+/* ---------- 睡眠 ---------- */
+async function updateSleepCard() {
+    const data = await GistDB.getKey('witchSleepDB') || [];
+    if (!data.length) return;
+    const sorted = [...data].sort((a,b)=>new Date(b.date)-new Date(a.date));
+    const latest = sorted[0];
+    document.getElementById('sleepDuration').textContent = `${latest.duration.toFixed(1)} 小时`;
+    const qm = {'good':{t:'优质睡眠',c:'quality-good'},'normal':{t:'一般睡眠',c:'quality-normal'},'bad':{t:'糟糕睡眠',c:'quality-bad'}};
+    const q = qm[latest.quality]||qm.normal;
+    const el = document.getElementById('sleepQuality');
+    el.textContent=q.t; el.className=`sleep-quality ${q.c}`;
+}
+
+/* ---------- 物品 ---------- */
+async function updateItemsCard() {
+    const data = await GistDB.getKey('witchItemsDB') || [];
+    const c = document.getElementById('itemsContent');
+    if (!data.length) { c.innerHTML=`<div class="empty-state"><i class="fas fa-gem"></i><p>暂无物品</p></div>`; return; }
+    const today = new Date(); today.setHours(0,0,0,0);
+    const expiring = data.filter(i=>{
+        if(!i.expiryDate) return false;
+        const e=new Date(i.expiryDate); e.setHours(0,0,0,0);
+        const d=e-today; return d>=0&&d<=7 * 86400000;
+    }).slice(0,3);
+    const washing = data.filter(i=>i.category==='clothes'&&i.isWorn).slice(0,3);
+    let html='';
+    if(expiring.length){
+        html+='<div style="margin-bottom:8px"><div style="font-size:.75em;color:var(--text-light);margin-bottom:3px">⚠️ 快过期：</div>';
+        expiring.forEach(i=>{
+            const e=new Date(i.expiryDate); e.setHours(0,0,0,0);
+            const d=Math.ceil((e-today)/86400000);
+            html+=`<div class="expiring-item"><span class="item-name">${i.name}</span><span class="item-days">${d===0?'今日':d+'天'}</span></div>`;
+        });
+        html+='</div>';
+    }
+    if(washing.length){
+        html+='<div><div style="font-size:.75em;color:var(--text-light);margin-bottom:3px">👕 待洗衣物：</div>';
+        washing.forEach(i=>{
+            const w=new Date(i.wornDate); const d=Math.floor((today-w)/86400000);
+            html+=`<div class="washing-item"><span class="item-name">${i.name}</span><span class="item-days">${d}天</span></div>`;
+        });
+        html+='</div>';
+    }
+    c.innerHTML = html || `<div class="empty-state"><i class="fas fa-check-circle"></i><p>一切正常</p></div>`;
+}
+
+/* ---------- 书籍 ---------- */
+async function updateBooksCard() {
+    const data = await GistDB.getKey('witchBooksDB') || [];
+    const c = document.getElementById('booksContent');
+    if (!data.length) { c.innerHTML=`<div class="empty-state"><i class="fas fa-book"></i><p>暂无书籍</p></div>`; return; }
+    const reading = data.filter(b=>b.status==='reading').slice(0,3);
+    if(!reading.length){ c.innerHTML=`<div class="empty-state"><i class="fas fa-book-open"></i><p>暂无在读书籍</p></div>`; return; }
+    let html='';
+    reading.forEach(b=>{
+        let p=0;
+        if(b.records?.length){
+            const latest=b.records.sort((a,b)=>new Date(b.date)-new Date(a.date))[0];
+            p=latest.progress||0;
+        }
+        html+=`<div class="reading-book"><div class="book-title">${b.title}</div><div class="book-progress"><span>${b.author}</span><div class="progress-mini"><div class="progress-mini-fill" style="width:${p}%"></div></div><span>${p}%</span></div></div>`;
+    });
+    c.innerHTML=html;
+}
+
+/* ---------- 任务 ---------- */
+async function updateTasksCard() {
+    const tasks = await GistDB.getKey(JOURNAL_TASKS_KEY) || [];
+    const c = document.getElementById('tasksContent');
+    const today = new Date().toISOString().split('T')[0];
+
+    const todayTasks = tasks.filter(t=>!t.completed && t.startDate<=today && today<=t.deadline)
+        .sort((a,b)=>new Date(a.deadline)-new Date(b.deadline)).slice(0,4);
+
+    if(!todayTasks.length){ c.innerHTML=`<div class="empty-state"><i class="fas fa-check-circle"></i><p>今日任务已全部完成~</p></div>`; return; }
+
+    let html='';
+    todayTasks.forEach(t=>{
+        let pc='priority-medium';
+        if(t.type==='work'||t.type==='study') pc='priority-high';
+        else if(t.type==='fun') pc='priority-low';
+        html+=`<div class="task-item"><div class="task-checkbox ${t.completed?'checked':''}" onclick="event.stopPropagation();toggleTaskDash('${t.id}')">${t.completed?'<i class="fas fa-check" style="font-size:.7em"></i>':''}</div><div class="task-text ${t.completed?'completed':''}">${t.content}</div><div class="task-priority ${pc}"></div></div>`;
+    });
+    c.innerHTML=html;
+}
+
+async function toggleTaskDash(id) {
+    const tasks = await GistDB.getKey(JOURNAL_TASKS_KEY) || [];
+    const idx = tasks.findIndex(t=>t.id===id);
+    if(idx===-1) return;
+    tasks[idx].completed = !tasks[idx].completed;
+    tasks[idx].updatedAt = new Date().toISOString();
+    await GistDB.setKey(JOURNAL_TASKS_KEY, tasks);
+    updateTasksCard();
+}
+
+/* ---------- 灵感 ---------- */
+async function updateIdeasCard() {
+    const data = await GistDB.getKey('witchIdeasDB') || [];
+    const c = document.getElementById('ideasContent');
+    if(!data.length){ c.innerHTML=`<div class="empty-state"><i class="fas fa-lightbulb"></i><p>暂无灵感</p></div>`; return; }
+    const recent=[...data].sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt)).slice(0,3);
+    let html='';
+    recent.forEach(idea=>{
+        const tags=idea.tags||[];
+        html+=`<div class="idea-item"><div class="idea-content">${idea.content}</div>${tags.length?`<div class="idea-tags">${tags.slice(0,3).map(t=>`<span class="idea-tag">${t}</span>`).join('')}</div>`:''}<div class="idea-date">${formatShortDate(idea.createdAt)}</div></div>`;
+    });
+    c.innerHTML=html;
+}
+
+/* ==========================================
+   天气模块 —— OpenWeatherMap
+   ========================================== */
+const OWM_API_KEY = '807d6371cfa7d687ea7469ae901327f9';
+const OWM_CITY = 'Wuhan,CN';
+
+function weatherIcon(code) {
+    const m = { '01':'☀️','02':'⛅','03':'☁️','04':'☁️','09':'🌧️','10':'🌦️','11':'⛈️','13':'❄️','50':'🌫️' };
+    return m[code] || '🌡️';
+}
+function weatherDescEnToZh(main, desc) {
+    const mm = main.toLowerCase();
+    if(mm.includes('clear')) return '晴朗';
+    if(mm.includes('cloud')) return '多云';
+    if(mm.includes('rain')) return '降雨';
+    if(mm.includes('thunder')) return '雷雨';
+    if(mm.includes('snow')) return '降雪';
+    if(mm.includes('mist')||mm.includes('fog')||mm.includes('haze')) return '雾';
+    return desc || main;
+}
+
+async function fetchWeather() {
+    const c = document.getElementById('weatherContent');
+    c.innerHTML = `<div class="weather-loading"><i class="fas fa-spinner fa-spin"></i><p>召唤气象精灵中...</p></div>`;
+    try {
+        const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${OWM_CITY}&appid=${OWM_API_KEY}&units=metric&lang=zh_cn`);
+        if(!res.ok) throw new Error(res.status);
+        const d = await res.json();
+        const temp = Math.round(d.main.temp);
+        const feels = Math.round(d.main.feels_like);
+        const hum = d.main.humidity;
+        const wind = d.wind.speed;
+        const ic = d.weather[0].icon.slice(0,2);
+        const zh = weatherDescEnToZh(d.weather[0].main, d.weather[0].description);
+        c.innerHTML = `
+            <div class="weather-main"><div class="weather-temp">${temp}°C</div><div class="weather-icon">${weatherIcon(ic)}</div></div>
+            <div class="weather-desc">${zh} · 体感 ${feels}°C</div>
+            <div class="weather-details"><span>湿度：${hum}%</span><span>风速：${wind} m/s</span></div>
+        `;
+    } catch(e) {
+        console.warn('OpenWeather 失败:', e);
+        c.innerHTML = `<div class="weather-loading"><i class="fas fa-cloud-exclamation"></i><p>气象精灵走丢了~<br>稍后再试</p></div>`;
+    }
+}
+
+/* ========================================== */
+async function updateAllData() {
+    document.getElementById('currentDate').textContent = formatDate(new Date());
+    await updateFinanceCard();
+    await updateWeightCard();
+    await updateSleepCard();
+    await updateItemsCard();
+    await updateBooksCard();
+    await updateTasksCard();
+    await updateIdeasCard();
+    fetchWeather();
+    document.getElementById('lastUpdate').textContent = new Date().toLocaleString('zh-CN');
+}
+
+/* 应用初始化入口 */
+async function initApp() {
+    console.log('女巫观测台启动（Gist 云端模式）...');
+    await initAvatarAndBg();
+    updateAllData();
+    setInterval(updateAllData, 5 * 60 * 1000);
+    setInterval(fetchWeather, 30 * 60 * 1000);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    // 检查是否已保存 Token
+    if (getGistToken()) {
+        // 已有 Token，直接进入应用
+        initApp();
+    } else {
+        // 没有 Token，弹出输入框
+        showApiKeyModal();
+    }
+});
+</script>
+</body>
+</html>
