@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>夜寐星光 - 见习女巫</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-blue: #e6f2ff;
+            --secondary-blue: #cce7ff;
+            --accent-blue: #a3d5ff;
+            --soft-blue: #b8daff;
+            --pale-blue: #f0f8ff;
+            
+            --text-dark: #4a5568;
+            --text-light: #718096;
+            --text-lighter: #a0aec0;
+            
+            --card-bg: rgba(255, 255, 255, 0.65);
+            --card-border: rgba(255, 255, 255, 0.4);
+            --shadow-sm: 0 2px 8px rgba(174, 200, 236, 0.1);
+            --shadow-md: 0 4px 12px rgba(174, 200, 236, 0.15);
+            --radius-sm: 8px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+            
+            --border-light: 1px solid rgba(226, 232, 240, 0.3);
+        }
+
+        * { 
+            box-sizing: border-box; 
+            font-family: 'Noto Sans SC', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif; 
+            margin: 0; 
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--primary-blue);
+            min-height: 100vh;
+            padding: 20px;
+            color: var(--text-dark);
+            overflow-x: hidden;
+            position: relative;
+            line-height: 1.5;
+            font-size: 13px;
+        }
+
+        .sleep-container {
+            max-width: 900px; 
+            margin: auto; 
+            position: relative; 
+            z-index: 1;
+        }
+
+        .header {
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            margin-bottom: 24px; 
+            padding: 18px 0 12px 0;
+            background: transparent;
+            backdrop-filter: none;
+            border-radius: 0;
+            box-shadow: none;
+            border: none;
+            position: relative;
+        }
+        
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: var(--accent-blue);
+            border-radius: 2px;
+        }
+        
+        .header h1 { 
+            color: var(--text-dark); 
+            margin: 0; 
+            font-weight: 300;
+            letter-spacing: 2px;
+            font-family: 'Noto Serif SC', serif;
+            font-size: 1.6em;
+        }
+        
+        .header h1 i { 
+            margin-right: 10px; 
+            color: var(--accent-blue);
+        }
+        
+        .back-link { 
+            color: var(--text-light); 
+            text-decoration: none; 
+            font-weight: 500;
+            font-size: 0.9em;
+            transition: color 0.2s;
+        }
+        
+        .back-link:hover { 
+            color: var(--accent-blue);
+        }
+
+        .stats-row {
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); 
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background: var(--card-bg); 
+            backdrop-filter: blur(8px);
+            border-radius: var(--radius-md); 
+            padding: 15px; 
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+            border: var(--border-light);
+            border-left: none;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .stat-value {
+            font-size: 1.6em; 
+            font-weight: 600; 
+            color: var(--accent-blue); 
+            margin-bottom: 4px;
+            letter-spacing: -0.5px;
+        }
+        
+        .stat-label { 
+            font-size: 0.8em; 
+            color: var(--text-light); 
+            font-weight: 500;
+        }
+
+        .input-panel {
+            background: var(--card-bg); 
+            backdrop-filter: blur(8px);
+            border-radius: var(--radius-md); 
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-sm);
+            border: var(--border-light);
+            border-left: none;
+            transition: all 0.3s ease;
+        }
+        
+        .input-panel:hover {
+            box-shadow: var(--shadow-md);
+        }
+        
+        .panel-title {
+            color: var(--text-dark); 
+            margin: 0 0 18px 0;
+            font-size: 1.1em; 
+            display: flex; 
+            align-items: center; 
+            gap: 8px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        
+        .panel-title i {
+            color: var(--accent-blue);
+        }
+        
+        .time-inputs {
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 15px; 
+            margin-bottom: 18px;
+        }
+        
+        @media (max-width: 600px) { 
+            .time-inputs { 
+                grid-template-columns: 1fr; 
+            } 
+        }
+        
+        .form-group { 
+            margin-bottom: 15px; 
+        }
+        
+        .form-group label {
+            display: block; 
+            margin-bottom: 6px; 
+            font-weight: 500;
+            color: var(--text-light); 
+            font-size: 0.85em;
+        }
+        
+        .form-group input, 
+        .form-group select, 
+        .form-group textarea {
+            width: 100%; 
+            padding: 10px 12px; 
+            border: var(--border-light);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.8); 
+            font-size: 0.9em; 
+            color: var(--text-dark);
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+        
+        .form-group input:focus, 
+        .form-group select:focus, 
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(163, 213, 255, 0.2);
+        }
+        
+        .form-group textarea { 
+            resize: vertical; 
+            min-height: 70px; 
+        }
+        
+        .btn-save {
+            width: 100%; 
+            padding: 12px; 
+            font-size: 0.95em; 
+            border: none; 
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--accent-blue), var(--soft-blue));
+            color: white; 
+            cursor: pointer; 
+            transition: all 0.3s;
+            box-shadow: var(--shadow-sm);
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 8px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+        
+        .btn-save:hover { 
+            transform: translateY(-2px); 
+            box-shadow: var(--shadow-md);
+        }
+
+        .history-panel {
+            background: var(--card-bg); 
+            backdrop-filter: blur(8px);
+            border-radius: var(--radius-md); 
+            padding: 18px;
+            box-shadow: var(--shadow-sm);
+            border: var(--border-light);
+            border-left: none;
+            transition: all 0.3s ease;
+        }
+        
+        .history-panel:hover {
+            box-shadow: var(--shadow-md);
+        }
+        
+        .history-header {
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            margin-bottom: 15px; 
+            border-bottom: var(--border-light);
+            padding-bottom: 8px;
+        }
+        
+        .history-header h2 { 
+            margin: 0; 
+            color: var(--text-dark); 
+            font-size: 1em;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        
+        .history-header h2 i {
+            color: var(--accent-blue);
+            margin-right: 8px;
+        }
+        
+        .btn-export {
+            padding: 6px 14px; 
+            border: none; 
+            border-radius: 15px;
+            background: rgba(163, 213, 255, 0.2); 
+            color: var(--text-dark); 
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex; 
+            align-items: center; 
+            gap: 6px;
+            font-size: 0.8em;
+            font-weight: 500;
+        }
+        
+        .btn-export:hover { 
+            background: rgba(163, 213, 255, 0.3); 
+            color: var(--accent-blue);
+        }
+
+        .history-list { 
+            max-height: 280px; 
+            overflow-y: auto; 
+            padding-right: 8px; 
+        }
+        
+        .history-item {
+            background: rgba(255, 255, 255, 0.4); 
+            border-radius: var(--radius-sm); 
+            padding: 12px;
+            margin-bottom: 10px; 
+            transition: transform 0.2s;
+            border: var(--border-light);
+            border-left: none;
+        }
+        
+        .history-item:hover { 
+            transform: translateX(3px); 
+            background: rgba(255, 255, 255, 0.6);
+        }
+        
+        .item-header {
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .item-date { 
+            font-weight: 600; 
+            color: var(--text-dark); 
+            font-size: 0.9em;
+        }
+        
+        .item-actions { 
+            display: flex; 
+            gap: 8px; 
+        }
+        
+        .btn-action {
+            background: none; 
+            border: none; 
+            cursor: pointer; 
+            font-size: 0.9em;
+            padding: 4px; 
+            border-radius: 4px; 
+            transition: background 0.2s;
+            color: var(--text-lighter);
+        }
+        
+        .btn-edit:hover { 
+            background: rgba(163, 213, 255, 0.2); 
+            color: var(--accent-blue);
+        }
+        
+        .btn-delete:hover { 
+            background: rgba(255, 154, 158, 0.2); 
+            color: #ff9a9e; 
+        }
+        
+        .item-details { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); 
+            gap: 8px; 
+        }
+        
+        .detail-item { 
+            text-align: center; 
+        }
+        
+        .detail-label { 
+            font-size: 0.75em; 
+            color: var(--text-light); 
+            margin-bottom: 2px;
+            font-weight: 500;
+        }
+        
+        .detail-value { 
+            font-weight: 600; 
+            color: var(--text-dark); 
+            font-size: 0.85em;
+        }
+        
+        .sleep-quality {
+            display: inline-block; 
+            padding: 3px 10px; 
+            border-radius: 12px; 
+            font-size: 0.75em;
+            font-weight: 600; 
+            color: white;
+        }
+        
+        .quality-good { 
+            background: #7eb8da; 
+        }
+        
+        .quality-normal { 
+            background: #ffcb6b; 
+        }
+        
+        .quality-bad { 
+            background: #ff9a9e; 
+        }
+        
+        .sleep-note {
+            margin-top: 10px; 
+            padding: 8px; 
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 6px; 
+            font-size: 0.8em; 
+            color: var(--text-light);
+            font-style: italic;
+            line-height: 1.4;
+        }
+
+        .modal {
+            display: none; 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%;
+            background: rgba(0,0,0,0.3); 
+            z-index: 1000; 
+            backdrop-filter: blur(5px);
+            align-items: center; 
+            justify-content: center;
+        }
+        
+        .modal.active { 
+            display: flex; 
+        }
+        
+        .modal-content {
+            background: white; 
+            border-radius: var(--radius-md); 
+            padding: 20px; 
+            width: 90%; 
+            max-width: 450px;
+            box-shadow: var(--shadow-md); 
+            max-height: 85vh; 
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .modal-title { 
+            color: var(--text-dark); 
+            margin: 0; 
+            font-size: 1.1em;
+            font-weight: 600;
+        }
+        
+        .modal-title i {
+            color: var(--accent-blue);
+            margin-right: 8px;
+        }
+        
+        .btn-close {
+            background: none; 
+            border: none; 
+            font-size: 1.3em; 
+            cursor: pointer;
+            color: var(--text-lighter); 
+            padding: 4px; 
+            line-height: 1;
+            transition: color 0.2s;
+        }
+        
+        .btn-close:hover { 
+            color: #ff9a9e; 
+        }
+
+        ::-webkit-scrollbar { 
+            width: 5px; 
+        }
+        
+        ::-webkit-scrollbar-track { 
+            background: transparent; 
+        }
+        
+        ::-webkit-scrollbar-thumb { 
+            background: var(--accent-blue); 
+            border-radius: 3px; 
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--soft-blue);
+        }
+
+        .empty-state {
+            text-align: center; 
+            padding: 30px 15px; 
+            color: var(--text-light);
+        }
+        
+        .empty-state i { 
+            font-size: 2.5em; 
+            margin-bottom: 12px; 
+            opacity: 0.5; 
+        }
+        
+        .empty-state p {
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+                font-size: 12px;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 12px;
+                text-align: center;
+            }
+            
+            .header::after {
+                width: 60px;
+            }
+            
+            .stats-row {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .item-details {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* ===== API Key 弹窗样式 ===== */
+        #apiKeyModal {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.45);
+            z-index: 99999;
+            display: flex; align-items: center; justify-content: center;
+        }
+        #apiKeyModal.hidden { display: none; }
+        .api-key-box {
+            background: white;
+            padding: 28px 24px;
+            border-radius: var(--radius-md);
+            width: 360px;
+            text-align: center;
+            box-shadow: var(--shadow-lg);
+        }
+        .api-key-box h3 {
+            margin-bottom: 14px;
+            color: var(--text-dark);
+            font-size: 1.1em;
+        }
+        .api-key-box input {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 0.95em;
+            margin-bottom: 12px;
+        }
+        .api-key-box button {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--accent-blue), var(--soft-blue));
+            color: white;
+            font-size: 1em;
+            cursor: pointer;
+        }
+        .api-key-tip {
+            font-size: 0.75em;
+            color: var(--text-light);
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- ===== API Key 弹窗 ===== -->
+<div id="apiKeyModal">
+    <div class="api-key-box">
+        <h3>🔑 请输入 GitHub Token</h3>
+        <input id="apiKeyInput" type="password" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+        <button onclick="saveApiKey()">保存并进入</button>
+        <div class="api-key-tip">
+            只需输入一次，Token 仅保存在本浏览器<br>
+            权限仅需勾选 <strong>gist</strong>
+        </div>
+    </div>
+</div>
+
+<div class="sleep-container">
+    <div class="header">
+        <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> 返回观测台</a>
+        <h1><i class="fas fa-moon"></i> 夜寐星光</h1>
+        <div></div>
+    </div>
+
+    <div class="stats-row">
+        <div class="stat-card">
+            <div class="stat-value" id="avgSleep">--</div>
+            <div class="stat-label">平均睡眠时长</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" id="totalRecords">0</div>
+            <div class="stat-label">记录天数</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" id="bestSleep">--</div>
+            <div class="stat-label">最佳睡眠时长</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" id="goodRate">--</div>
+            <div class="stat-label">优质睡眠率</div>
+        </div>
+    </div>
+
+    <div class="input-panel">
+        <h3 class="panel-title"><i class="fas fa-bed"></i> 今夜安眠记录</h3>
+        <div class="time-inputs">
+            <div class="form-group">
+                <label><i class="far fa-clock"></i> 入睡时间</label>
+                <input type="time" id="sleepTime" value="23:30">
+            </div>
+            <div class="form-group">
+                <label><i class="fas fa-sunrise"></i> 醒来时间</label>
+                <input type="time" id="wakeTime" value="07:30">
+            </div>
+        </div>
+        <div class="form-group">
+            <label><i class="fas fa-smile"></i> 睡眠感受</label>
+            <select id="sleepQuality">
+                <option value="good">😴 精神饱满（优质）</option>
+                <option value="normal" selected>😌 一般般啦（普通）</option>
+                <option value="bad">😫 疲惫不堪（糟糕）</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label><i class="fas fa-feather-alt"></i> 梦境低语（可选）</label>
+            <textarea id="sleepNote" placeholder="今晚梦到了什么？或者有什么特别的感受..."></textarea>
+        </div>
+        <button class="btn-save" onclick="saveSleep()">
+            <i class="fas fa-magic"></i> 封存今夜星光
+        </button>
+    </div>
+
+    <div class="history-panel">
+        <div class="history-header">
+            <h2><i class="fas fa-scroll"></i> 星光历史卷轴</h2>
+            <button class="btn-export" onclick="exportSleepData()">
+                <i class="fas fa-file-download"></i> 导出卷轴
+            </button>
+        </div>
+        <div class="history-list" id="historyList"></div>
+    </div>
+</div>
+
+<div class="modal" id="editModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title"><i class="fas fa-edit"></i> 编辑星光记录</h3>
+            <button class="btn-close" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="form-group">
+            <label><i class="far fa-clock"></i> 入睡时间</label>
+            <input type="time" id="editSleepTime">
+        </div>
+        <div class="form-group">
+            <label><i class="fas fa-sunrise"></i> 醒来时间</label>
+            <input type="time" id="editWakeTime">
+        </div>
+        <div class="form-group">
+            <label><i class="fas fa-smile"></i> 睡眠感受</label>
+            <select id="editSleepQuality">
+                <option value="good">😴 精神饱满（优质）</option>
+                <option value="normal">😌 一般般啦（普通）</option>
+                <option value="bad">😫 疲惫不堪（糟糕）</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label><i class="fas fa-feather-alt"></i> 梦境低语</label>
+            <textarea id="editSleepNote" placeholder="今晚梦到了什么？"></textarea>
+        </div>
+        <input type="hidden" id="editRecordId">
+        <button class="btn-save" onclick="updateSleep()">
+            <i class="fas fa-check"></i> 确认修改
+        </button>
+    </div>
+</div>
+
+<script>
+/* ==========================================
+   API Key 管理（不再依赖 gist-db.js）
+   ========================================== */
+const STORAGE_KEY = 'witch_api_key';
+const GIST_ID = 'c9b52465d580c277cb7e55ac9e589ed4';
+const GIST_FILE = 'witchlife.json';
+const SLEEP_DB_KEY = 'witchSleepDB';
+
+function getApiKey() {
+    return localStorage.getItem(STORAGE_KEY) || '';
+}
+
+function saveApiKey() {
+    const key = document.getElementById('apiKeyInput').value.trim();
+    if (!key) return alert('请输入 Token');
+    localStorage.setItem(STORAGE_KEY, key);
+    document.getElementById('apiKeyModal').classList.add('hidden');
+    loadSleepData();
+}
+
+/* 页面加载时判断是否已输入 Key */
+document.addEventListener('DOMContentLoaded', () => {
+    if (getApiKey()) {
+        document.getElementById('apiKeyModal').classList.add('hidden');
+        loadSleepData();
+    }
+});
+
+/* ==========================================
+   Gist 云端数据库（动态读取 Token）
+   ========================================== */
+async function gistLoad() {
+    const res = await fetch(`https://api.github.com/gists/${GIST_ID}`);
+    if (!res.ok) throw new Error();
+    const gist = await res.json();
+    if (gist.files[GIST_FILE]?.content) {
+        return JSON.parse(gist.files[GIST_FILE].content);
+    }
+    return {};
+}
+
+async function gistSave(data) {
+    const token = getApiKey();
+    if (!token) return false;
+    const res = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
+        method: 'PATCH',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            files: {
+                [GIST_FILE]: { content: JSON.stringify(data, null, 2) }
+            }
+        })
+    });
+    return res.ok;
+}
+
+async function getSleepData() {
+    const all = await gistLoad();
+    return all[SLEEP_DB_KEY] || [];
+}
+
+async function saveSleepData(sleep) {
+    const all = await gistLoad();
+    all[SLEEP_DB_KEY] = sleep;
+    return gistSave(all);
+}
+
+/* ==========================================
+   内存缓存
+   ========================================== */
+let sleepDB = [];
+
+/* ==========================================
+   初始化加载
+   ========================================== */
+async function loadSleepData() {
+    try {
+        sleepDB = await getSleepData();
+        renderHistory();
+    } catch {
+        alert('⚠️ 读取云端数据失败，请检查 Token 是否正确');
+    }
+}
+
+/* ==========================================
+   工具函数
+   ========================================== */
+function getQualityDisplay(quality) {
+    const map = {
+        'good': { text: '优质', class: 'quality-good' },
+        'normal': { text: '普通', class: 'quality-normal' },
+        'bad': { text: '糟糕', class: 'quality-bad' }
+    };
+    return map[quality] || map['normal'];
+}
+
+function calculateDuration(sleepTime, wakeTime) {
+    const [sleepHour, sleepMin] = sleepTime.split(':').map(Number);
+    const [wakeHour, wakeMin] = wakeTime.split(':').map(Number);
+    
+    let sleepMinutes = sleepHour * 60 + sleepMin;
+    let wakeMinutes = wakeHour * 60 + wakeMin;
+    
+    if (wakeMinutes <= sleepMinutes) {
+        wakeMinutes += 24 * 60;
+    }
+    
+    const durationMinutes = wakeMinutes - sleepMinutes;
+    return parseFloat((durationMinutes / 60).toFixed(1));
+}
+
+function formatDuration(hours) {
+    const h = Math.floor(hours);
+    const m = Math.round((hours - h) * 60);
+    if (h === 0) return `${m}分钟`;
+    if (m === 0) return `${h}小时`;
+    return `${h}小时${m}分钟`;
+}
+
+/* ==========================================
+   渲染逻辑
+   ========================================== */
+function renderHistory() {
+    const list = document.getElementById('historyList');
+    
+    if (sleepDB.length === 0) {
+        list.innerHTML = `
+            <div class="empty-state">
+                <i class="fas fa-moon"></i>
+                <p>还没有星光记录哦~<br>开始记录你的第一个美梦吧！</p>
+            </div>
+        `;
+        updateStats();
+        return;
+    }
+    
+    const sortedDb = [...sleepDB].sort((a, b) => new Date(b.date) - new Date(a.date));
+    
+    list.innerHTML = sortedDb.map(record => {
+        const quality = getQualityDisplay(record.quality);
+        return `
+            <div class="history-item" data-id="${record.id}">
+                <div class="item-header">
+                    <div class="item-date">🌙 ${record.date}</div>
+                    <div class="item-actions">
+                        <button class="btn-action btn-edit" onclick="openEditModal('${record.id}')" title="编辑">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn-action btn-delete" onclick="deleteSleep('${record.id}')" title="删除">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="item-details">
+                    <div class="detail-item">
+                        <div class="detail-label">入睡</div>
+                        <div class="detail-value">${record.sleepTime}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">醒来</div>
+                        <div class="detail-value">${record.wakeTime}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">时长</div>
+                        <div class="detail-value">${formatDuration(record.duration)}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">感受</div>
+                        <div class="detail-value">
+                            <span class="sleep-quality ${quality.class}">${quality.text}</span>
+                        </div>
+                    </div>
+                </div>
+                ${record.note ? `<div class="sleep-note">"${record.note}"</div>` : ''}
+            </div>
+        `;
+    }).join('');
+    
+    updateStats();
+}
+
+function updateStats() {
+    const totalRecords = sleepDB.length;
+    
+    if (totalRecords === 0) {
+        document.getElementById('avgSleep').textContent = '--';
+        document.getElementById('totalRecords').textContent = '0';
+        document.getElementById('bestSleep').textContent = '--';
+        document.getElementById('goodRate').textContent = '--';
+        return;
+    }
+    
+    const avgDuration = sleepDB.reduce((sum, r) => sum + r.duration, 0) / totalRecords;
+    document.getElementById('avgSleep').textContent = formatDuration(avgDuration);
+    
+    document.getElementById('totalRecords').textContent = totalRecords;
+    
+    const bestDuration = Math.max(...sleepDB.map(r => r.duration));
+    document.getElementById('bestSleep').textContent = formatDuration(bestDuration);
+    
+    const goodCount = sleepDB.filter(r => r.quality === 'good').length;
+    const goodRate = ((goodCount / totalRecords) * 100).toFixed(0);
+    document.getElementById('goodRate').textContent = `${goodRate}%`;
+}
+
+/* ==========================================
+   核心功能
+   ========================================== */
+async function saveSleep() {
+    const sleepTime = document.getElementById('sleepTime').value;
+    const wakeTime = document.getElementById('wakeTime').value;
+    const quality = document.getElementById('sleepQuality').value;
+    const note = document.getElementById('sleepNote').value.trim();
+    
+    if (!sleepTime || !wakeTime) {
+        alert('请填写入睡时间和醒来时间哦，见习女巫~');
+        return;
+    }
+    
+    const today = new Date().toISOString().split('T')[0];
+    const duration = calculateDuration(sleepTime, wakeTime);
+    
+    const existingIndex = sleepDB.findIndex(r => r.date === today);
+    if (existingIndex > -1) {
+        if (!confirm('今日已有星光记录，是否覆盖？')) return;
+        sleepDB.splice(existingIndex, 1);
+    }
+    
+    const newRecord = {
+        id: today,
+        date: today,
+        sleepTime: sleepTime,
+        wakeTime: wakeTime,
+        duration: duration,
+        quality: quality,
+        note: note
+    };
+    
+    sleepDB.push(newRecord);
+    sleepDB.sort((a, b) => new Date(a.date) - new Date(b.date));
+    
+    await saveSleepData(sleepDB);
+    renderHistory();
+    
+    document.getElementById('sleepNote').value = '';
+    
+    const qualityText = getQualityDisplay(quality).text;
+    alert(`今夜星光已封存！✨\n睡眠时长：${formatDuration(duration)}\n睡眠感受：${qualityText}`);
+}
+
+function openEditModal(id) {
+    const record = sleepDB.find(r => r.id === id);
+    if (!record) return;
+    
+    document.getElementById('editRecordId').value = id;
+    document.getElementById('editSleepTime').value = record.sleepTime;
+    document.getElementById('editWakeTime').value = record.wakeTime;
+    document.getElementById('editSleepQuality').value = record.quality;
+    document.getElementById('editSleepNote').value = record.note || '';
+    
+    document.getElementById('editModal').classList.add('active');
+}
+
+function closeModal() {
+    document.getElementById('editModal').classList.remove('active');
+}
+
+async function updateSleep() {
+    const id = document.getElementById('editRecordId').value;
+    const sleepTime = document.getElementById('editSleepTime').value;
+    const wakeTime = document.getElementById('editWakeTime').value;
+    const quality = document.getElementById('editSleepQuality').value;
+    const note = document.getElementById('editSleepNote').value.trim();
+    
+    if (!sleepTime || !wakeTime) {
+        alert('请填写入睡时间和醒来时间哦~');
+        return;
+    }
+    
+    const index = sleepDB.findIndex(r => r.id === id);
+    if (index === -1) return;
+    
+    const duration = calculateDuration(sleepTime, wakeTime);
+    
+    sleepDB[index] = {
+        ...sleepDB[index],
+        sleepTime: sleepTime,
+        wakeTime: wakeTime,
+        duration: duration,
+        quality: quality,
+        note: note
+    };
+    
+    await saveSleepData(sleepDB);
+    renderHistory();
+    closeModal();
+    alert('星光记录已更新！✨');
+}
+
+async function deleteSleep(id) {
+    if (!confirm('确定要删除这条星光记录吗？删除后无法恢复哦~')) return;
+    
+    sleepDB = sleepDB.filter(r => r.id !== id);
+    await saveSleepData(sleepDB);
+    renderHistory();
+    alert('星光记录已消散~');
+}
+
+function exportSleepData() {
+    if (sleepDB.length === 0) {
+        alert('卷轴空空如也，先记录几个美梦吧~');
+        return;
+    }
+    
+    let content = '🌙 夜寐星光历史卷轴 🌙\n';
+    content += '===================================\n\n';
+    
+    const avgDuration = sleepDB.reduce((sum, r) => sum + r.duration, 0) / sleepDB.length;
+    const goodCount = sleepDB.filter(r => r.quality === 'good').length;
+    const goodRate = ((goodCount / sleepDB.length) * 100).toFixed(1);
+    
+    content += `📊 统计概览：\n`;
+    content += `总记录天数：${sleepDB.length}天\n`;
+    content += `平均睡眠时长：${formatDuration(avgDuration)}\n`;
+    content += `优质睡眠率：${goodRate}%\n\n`;
+    content += '===================================\n\n';
+    
+    sleepDB.sort((a, b) => new Date(a.date) - new Date(b.date)).forEach(record => {
+        const quality = getQualityDisplay(record.quality);
+        content += `📅 日期：${record.date}\n`;
+        content += `😴 入睡时间：${record.sleepTime}\n`;
+        content += `☀️ 醒来时间：${record.wakeTime}\n`;
+        content += `⏱️ 睡眠时长：${formatDuration(record.duration)}\n`;
+        content += `💭 睡眠感受：${quality.text}\n`;
+        if (record.note) content += `📝 梦境低语：${record.note}\n`;
+        content += '---------------------------\n';
+    });
+    
+    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `夜寐星光卷轴_${new Date().toISOString().split('T')[0]}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+// 点击模态框外部关闭
+document.getElementById('editModal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+});
+</script>
+
+</body>
+</html>

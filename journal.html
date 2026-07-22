@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>见习女巫手账</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-blue: #e6f2ff;
+            --accent-blue: #a3d5ff;
+            --soft-blue: #b8daff;
+            --pale-blue: #f0f8ff;
+
+            --text-dark: #4a5568;
+            --text-light: #718096;
+            --card-bg: rgba(255, 255, 255, 0.88);
+
+            --radius: 14px;
+            --shadow: 0 4px 18px rgba(163, 213, 255, 0.15);
+
+            --type-study: #7eb8da;
+            --type-life: #a3c4fd;
+            --type-fun: #ffcb6b;
+            --type-work: #b8a9e6;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif; }
+
+        body {
+            background: var(--primary-blue);
+            min-height: 100vh;
+            padding: 20px;
+            color: var(--text-dark);
+            font-size: 14px;
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; }
+
+        .header {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 18px 24px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 5px solid var(--accent-blue);
+        }
+        .header h1 {
+            color: var(--text-dark);
+            font-size: 1.6em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .header h1 i { color: var(--accent-blue); }
+
+        .week-nav { display: flex; align-items: center; gap: 15px; }
+        .week-nav button {
+            width: 36px; height: 36px;
+            border: none; border-radius: 50%;
+            background: var(--pale-blue);
+            color: var(--accent-blue);
+            cursor: pointer; font-size: 1em;
+            transition: all 0.2s;
+        }
+        .week-nav button:hover {
+            background: var(--accent-blue);
+            color: white;
+            transform: scale(1.1);
+        }
+        .week-range {
+            font-size: 1em;
+            color: var(--text-dark);
+            font-weight: 600;
+            min-width: 180px;
+            text-align: center;
+        }
+
+        .back-btn {
+            padding: 8px 18px;
+            background: linear-gradient(135deg, var(--accent-blue), var(--soft-blue));
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9em;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(163, 213, 255, 0.3);
+        }
+
+        .week-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        @media (max-width: 900px) { .week-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 600px) { .week-grid { grid-template-columns: 1fr; } }
+
+        .day-cell {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 14px;
+            min-height: 260px;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            transition: all 0.3s;
+            border-top: 4px solid var(--soft-blue);
+            display: flex;
+            flex-direction: column;
+        }
+        .day-cell:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(163, 213, 255, 0.2);
+            border-top-color: var(--accent-blue);
+        }
+        .day-cell.today {
+            border-top-color: #ffd700;
+            background: rgba(255, 255, 219, 0.25);
+        }
+        .day-cell.weekend {
+            background: rgba(183, 217, 255, 0.15);
+        }
+
+        .day-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px dashed rgba(0,0,0,0.06);
+        }
+        .day-name {
+            font-size: 0.9em;
+            color: var(--text-light);
+            font-weight: 500;
+        }
+        .day-num {
+            font-size: 1.4em;
+            font-weight: bold;
+            color: var(--accent-blue);
+            width: 32px; height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+        .today .day-num {
+            background: var(--accent-blue);
+            color: white;
+        }
+
+        .tasks-container {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+        .tasks-container::-webkit-scrollbar { width: 4px; }
+        .tasks-container::-webkit-scrollbar-thumb {
+            background: var(--accent-blue);
+            border-radius: 2px;
+        }
+
+        .task-item {
+            background: rgba(255,255,255,0.7);
+            border-radius: 8px;
+            padding: 8px 10px;
+            margin-bottom: 8px;
+            font-size: 0.85em;
+            border-left: 3px solid var(--type-study);
+            transition: all 0.2s;
+        }
+        .task-item:hover { background: rgba(255,255,255,0.9); }
+        .task-item.completed {
+            opacity: 0.55;
+            text-decoration: line-through;
+            border-left-color: #bdbdbd;
+        }
+
+        .task-type {
+            display: inline-block;
+            padding: 1px 8px;
+            border-radius: 10px;
+            font-size: 0.75em;
+            margin-bottom: 4px;
+            color: white;
+        }
+        .type-study { background: var(--type-study); }
+        .type-life { background: var(--type-life); }
+        .type-fun { background: var(--type-fun); }
+        .type-work { background: var(--type-work); }
+
+        .task-content { line-height: 1.4; margin-bottom: 4px; }
+        .task-deadline {
+            font-size: 0.75em;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .task-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 6px;
+            margin-top: 6px;
+        }
+        .task-btn {
+            width: 22px; height: 22px;
+            border: none; border-radius: 50%;
+            background: transparent;
+            cursor: pointer;
+            font-size: 0.8em;
+            transition: all 0.2s;
+        }
+        .task-check { color: var(--type-study); }
+        .task-check:hover { background: rgba(126, 184, 218, 0.2); }
+        .task-delete { color: #ff9a9e; }
+        .task-delete:hover { background: rgba(255, 154, 158, 0.2); }
+
+        .empty-tasks {
+            text-align: center;
+            padding: 20px 0;
+            color: var(--text-light);
+            font-size: 0.85em;
+        }
+        .empty-tasks i {
+            font-size: 1.5em;
+            margin-bottom: 8px;
+            opacity: 0.5;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.35);
+            z-index: 1000;
+            backdrop-filter: blur(4px);
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal.active { display: flex; }
+
+        .modal-content {
+            background: white;
+            border-radius: var(--radius);
+            width: 100%;
+            max-width: 500px;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(163, 213, 255, 0.25);
+        }
+
+        .modal-header {
+            padding: 18px 24px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-title {
+            font-size: 1.2em;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .modal-title i { color: var(--accent-blue); }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            color: var(--text-light);
+            cursor: pointer;
+            padding: 4px;
+            line-height: 1;
+        }
+        .modal-close:hover { color: #ff9a9e; }
+
+        .modal-body { padding: 24px; }
+        .modal-footer {
+            padding: 18px 24px;
+            border-top: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .form-group { margin-bottom: 18px; }
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 0.9em;
+            color: var(--text-light);
+            font-weight: 500;
+        }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 0.95em;
+            background: #fafafa;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(163, 213, 255, 0.25);
+            background: white;
+        }
+        .form-group textarea { min-height: 80px; resize: vertical; }
+
+        .btn-primary {
+            padding: 10px 24px;
+            background: linear-gradient(135deg, var(--accent-blue), var(--soft-blue));
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.95em;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(163, 213, 255, 0.3);
+        }
+
+        .btn-secondary {
+            padding: 10px 24px;
+            background: #f5f5f5;
+            color: var(--text-dark);
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.95em;
+            transition: all 0.2s;
+        }
+        .btn-secondary:hover { background: #e0e0e0; }
+
+        .footer {
+            text-align: center;
+            padding: 15px;
+            color: var(--text-light);
+            font-size: 0.8em;
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        /* ===== API Key 弹窗样式 ===== */
+        #apiKeyModal {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.45);
+            z-index: 99999;
+            display: flex; align-items: center; justify-content: center;
+        }
+        #apiKeyModal.hidden { display: none; }
+        .api-key-box {
+            background: white;
+            padding: 28px 24px;
+            border-radius: var(--radius);
+            width: 360px;
+            text-align: center;
+            box-shadow: 0 8px 24px rgba(163, 213, 255, 0.25);
+        }
+        .api-key-box h3 {
+            margin-bottom: 14px;
+            color: var(--text-dark);
+            font-size: 1.1em;
+        }
+        .api-key-box input {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 0.95em;
+            margin-bottom: 12px;
+        }
+        .api-key-box button {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--accent-blue), var(--soft-blue));
+            color: white;
+            font-size: 1em;
+            cursor: pointer;
+        }
+        .api-key-tip {
+            font-size: 0.75em;
+            color: var(--text-light);
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- ===== API Key 弹窗 ===== -->
+<div id="apiKeyModal">
+    <div class="api-key-box">
+        <h3>🔑 请输入 GitHub Token</h3>
+        <input id="apiKeyInput" type="password" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+        <button onclick="saveApiKey()">保存并进入</button>
+        <div class="api-key-tip">
+            只需输入一次，Token 仅保存在本浏览器<br>
+            权限仅需勾选 <strong>gist</strong>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="header">
+        <h1><i class="fas fa-book-sparkles"></i> 见习女巫手账</h1>
+        <div class="week-nav">
+            <button onclick="changeWeek(-1)" title="上一周"><i class="fas fa-chevron-left"></i></button>
+            <div class="week-range" id="weekRange"></div>
+            <button onclick="changeWeek(1)" title="下一周"><i class="fas fa-chevron-right"></i></button>
+        </div>
+        <button class="back-btn" onclick="location.href='index.html'">
+            <i class="fas fa-arrow-left"></i> 返回观测台
+        </button>
+    </div>
+
+    <div class="week-grid" id="weekGrid"></div>
+
+    <div class="footer">
+        ✨ 点击日期格子编辑任务 · 跨天任务自动同步 · 数据云端保存
+    </div>
+</div>
+
+<!-- 任务编辑模态框 -->
+<div class="modal" id="taskModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title" id="modalTitle">
+                <i class="fas fa-tasks"></i> 编辑当日任务
+            </h3>
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div id="existingTasks"></div>
+
+            <div style="margin-top: 24px; padding-top: 24px; border-top: 1px dashed #eee;">
+                <h4 style="color: var(--accent-blue); margin-bottom: 16px; font-size: 1em;">
+                    <i class="fas fa-plus-circle"></i> 新增任务
+                </h4>
+                <form id="taskForm" onsubmit="saveTask(event)">
+                    <div class="form-group">
+                        <label><i class="fas fa-align-left"></i> 任务内容 *</label>
+                        <textarea id="taskContent" required placeholder="比如：完成魔法药剂作业"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-tag"></i> 任务类型</label>
+                        <select id="taskType">
+                            <option value="study">📚 学习</option>
+                            <option value="life">🏠 生活</option>
+                            <option value="fun">🎮 娱乐</option>
+                            <option value="work">💼 工作</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-clock"></i> 完成期限</label>
+                        <select id="taskDeadline">
+                            <option value="0">今天</option>
+                            <option value="1">明天</option>
+                            <option value="3">3天后</option>
+                            <option value="7">1周后</option>
+                        </select>
+                    </div>
+                    <input type="hidden" id="selectedDate">
+                    <input type="hidden" id="editTaskId">
+                </form>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn-secondary" onclick="closeModal()">取消</button>
+            <button type="submit" form="taskForm" class="btn-primary">保存任务</button>
+        </div>
+    </div>
+</div>
+
+<script>
+/* ==========================================
+   API Key 管理（不再依赖 gist-db.js）
+   ========================================== */
+const STORAGE_KEY = 'witch_api_key';
+const GIST_ID = 'c9b52465d580c277cb7e55ac9e589ed4';
+const GIST_FILE = 'witchlife.json';
+const TASKS_DB_KEY = 'witchJournalTasks';
+
+function getApiKey() {
+    return localStorage.getItem(STORAGE_KEY) || '';
+}
+
+function saveApiKey() {
+    const key = document.getElementById('apiKeyInput').value.trim();
+    if (!key) return alert('请输入 Token');
+    localStorage.setItem(STORAGE_KEY, key);
+    document.getElementById('apiKeyModal').classList.add('hidden');
+    loadJournalData();
+}
+
+/* 页面加载时判断是否已输入 Key */
+document.addEventListener('DOMContentLoaded', () => {
+    if (getApiKey()) {
+        document.getElementById('apiKeyModal').classList.add('hidden');
+        loadJournalData();
+    }
+});
+
+/* ==========================================
+   Gist 云端数据库（动态读取 Token）
+   ========================================== */
+async function gistLoad() {
+    const res = await fetch(`https://api.github.com/gists/${GIST_ID}`);
+    if (!res.ok) throw new Error();
+    const gist = await res.json();
+    if (gist.files[GIST_FILE]?.content) {
+        return JSON.parse(gist.files[GIST_FILE].content);
+    }
+    return {};
+}
+
+async function gistSave(data) {
+    const token = getApiKey();
+    if (!token) return false;
+    const res = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
+        method: 'PATCH',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            files: {
+                [GIST_FILE]: { content: JSON.stringify(data, null, 2) }
+            }
+        })
+    });
+    return res.ok;
+}
+
+async function getTasksData() {
+    const all = await gistLoad();
+    return all[TASKS_DB_KEY] || [];
+}
+
+async function saveTasksData(tasks) {
+    const all = await gistLoad();
+    all[TASKS_DB_KEY] = tasks;
+    return gistSave(all);
+}
+
+/* ==========================================
+   内存缓存
+   ========================================== */
+let tasksDB = [];
+
+/* ==========================================
+   初始化加载
+   ========================================== */
+async function loadJournalData() {
+    try {
+        tasksDB = await getTasksData();
+        
+        // 首次使用：写入示例任务
+        if (tasksDB.length === 0) {
+            const today = formatDate(new Date());
+            const tm = formatDate(new Date(Date.now() + 864e5));
+            const nw = formatDate(new Date(Date.now() + 7 * 864e5));
+            tasksDB = [
+                {
+                    id: generateId(),
+                    startDate: today,
+                    deadline: tm,
+                    type: 'study',
+                    content: '复习魔法草药学',
+                    completed: false,
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                },
+                {
+                    id: generateId(),
+                    startDate: today,
+                    deadline: nw,
+                    type: 'work',
+                    content: '完成古堡月度报表',
+                    completed: false,
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                },
+                {
+                    id: generateId(),
+                    startDate: today,
+                    deadline: today,
+                    type: 'life',
+                    content: '整理水晶洞穴',
+                    completed: true,
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                }
+            ];
+            await saveTasksData(tasksDB);
+        }
+        
+        renderWeek();
+        console.log('见习女巫手账启动完成，共加载', tasksDB.length, '条任务');
+    } catch {
+        alert('⚠️ 读取云端数据失败，请检查 Token 是否正确');
+    }
+}
+
+/* ==========================================
+   工具函数
+   ========================================== */
+const TYPE_CONFIG = {
+    study: { name: '学习', class: 'type-study', icon: '📚' },
+    life:   { name: '生活', class: 'type-life', icon: '🏠' },
+    fun:    { name: '娱乐', class: 'type-fun', icon: '🎮' },
+    work:   { name: '工作', class: 'type-work', icon: '💼' }
+};
+
+function getMonday(date) {
+    const d = new Date(date);
+    const day = d.getDay();
+    const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+    return new Date(d.setDate(diff));
+}
+
+function formatDate(date) {
+    const d = new Date(date);
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+function formatDisplayDate(date) {
+    const d = new Date(date);
+    return `${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;
+}
+
+function getWeekRange(startDate) {
+    const start = new Date(startDate);
+    const end = new Date(startDate);
+    end.setDate(end.getDate() + 6);
+    return `${formatDisplayDate(start)} - ${formatDisplayDate(end)}`;
+}
+
+function generateId() {
+    return Date.now().toString(36) + Math.random().toString(36).substr(2);
+}
+
+/* ==========================================
+   渲染逻辑
+   ========================================== */
+let currentWeekStart = getMonday(new Date());
+
+function renderWeek() {
+    const weekGrid = document.getElementById('weekGrid');
+    const weekRange = document.getElementById('weekRange');
+    const today = formatDate(new Date());
+
+    weekRange.textContent = getWeekRange(currentWeekStart);
+
+    let html = '';
+    for (let i = 0; i < 7; i++) {
+        const day = new Date(currentWeekStart);
+        day.setDate(day.getDate() + i);
+        const dateStr = formatDate(day);
+        const isToday = dateStr === today;
+        const isWeekend = i >= 5;
+        const dayNames = ['周一','周二','周三','周四','周五','周六','周日'];
+
+        const dayTasks = tasksDB.filter(t =>
+            t.startDate <= dateStr && dateStr <= t.deadline
+        );
+
+        html += `
+        <div class="day-cell ${isToday?'today':''} ${isWeekend?'weekend':''}" onclick="openModal('${dateStr}')">
+            <div class="day-header">
+                <span class="day-name">${dayNames[i]}</span>
+                <span class="day-num">${day.getDate()}</span>
+            </div>
+            <div class="tasks-container">${renderDayTasks(dayTasks)}</div>
+        </div>`;
+    }
+    weekGrid.innerHTML = html;
+}
+
+function renderDayTasks(tasks) {
+    if (!tasks.length) {
+        return `<div class="empty-tasks"><i class="fas fa-feather-alt"></i><p>暂无任务<br>点击添加~</p></div>`;
+    }
+    const order = { work:1, study:2, life:3, fun:4 };
+    return [...tasks].sort((a,b)=>(order[a.type]||99)-(order[b.type]||99)).map(task=>{
+        const cfg = TYPE_CONFIG[task.type];
+        return `
+        <div class="task-item ${task.completed?'completed':''}" onclick="event.stopPropagation();editTask('${task.id}')">
+            <div class="task-type ${cfg.class}">${cfg.icon} ${cfg.name}</div>
+            <div class="task-content">${task.content}</div>
+            <div class="task-deadline"><i class="far fa-clock"></i>截止：${formatDisplayDate(new Date(task.deadline))}</div>
+            <div class="task-actions">
+                <button class="task-btn task-check" onclick="event.stopPropagation();toggleTaskComplete('${task.id}')">
+                    <i class="fas fa-${task.completed?'redo':'check'}"></i>
+                </button>
+                <button class="task-btn task-delete" onclick="event.stopPropagation();deleteTask('${task.id}')">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+/* ==========================================
+   交互功能
+   ========================================== */
+function changeWeek(offset) {
+    currentWeekStart.setDate(currentWeekStart.getDate() + offset * 7);
+    renderWeek();
+}
+
+function openModal(dateStr) {
+    document.getElementById('taskModal').classList.add('active');
+    document.getElementById('modalTitle').innerHTML = `<i class="fas fa-tasks"></i> ${formatDisplayDate(new Date(dateStr))} 任务`;
+    document.getElementById('selectedDate').value = dateStr;
+    document.getElementById('editTaskId').value = '';
+    document.getElementById('taskForm').reset();
+    renderExistingTasks(dateStr);
+}
+
+function closeModal() {
+    document.getElementById('taskModal').classList.remove('active');
+}
+
+function renderExistingTasks(dateStr) {
+    const tasks = tasksDB.filter(t => t.startDate <= dateStr && dateStr <= t.deadline);
+    const container = document.getElementById('existingTasks');
+    if (!tasks.length) {
+        container.innerHTML = `<div class="empty-tasks"><i class="fas fa-scroll"></i><p>今日暂无任务</p></div>`;
+        return;
+    }
+    container.innerHTML = '<h4 style="color:var(--accent-blue);margin-bottom:12px;">现有任务</h4>' +
+        tasks.map(task => {
+            const cfg = TYPE_CONFIG[task.type];
+            return `<div class="task-item ${task.completed?'completed':''}">
+                <div class="task-type ${cfg.class}">${cfg.icon} ${cfg.name}</div>
+                <div class="task-content">${task.content}</div>
+                <div class="task-deadline"><i class="far fa-clock"></i>截止：${formatDisplayDate(new Date(task.deadline))}</div>
+                <div class="task-actions">
+                    <button class="task-btn task-check" onclick="toggleTaskComplete('${task.id}')">
+                        <i class="fas fa-${task.completed?'redo':'check'}"></i>
+                    </button>
+                    <button class="task-btn task-delete" onclick="deleteTask('${task.id}')">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>`;
+        }).join('');
+}
+
+function editTask(id) {
+    const t = tasksDB.find(x => x.id === id);
+    if (!t) return;
+    document.getElementById('editTaskId').value = id;
+    document.getElementById('taskContent').value = t.content;
+    document.getElementById('taskType').value = t.type;
+    const diff = Math.round((new Date(t.deadline) - new Date(t.startDate)) / (864e5));
+    document.getElementById('taskDeadline').value = diff;
+}
+
+async function saveTask(e) {
+    e.preventDefault();
+    const date = document.getElementById('selectedDate').value;
+    const id = document.getElementById('editTaskId').value;
+    const content = document.getElementById('taskContent').value.trim();
+    const type = document.getElementById('taskType').value;
+    const offset = +document.getElementById('taskDeadline').value;
+    if (!content) return alert('请填写任务内容~');
+
+    const deadline = new Date(date);
+    deadline.setDate(deadline.getDate() + offset);
+
+    if (id) {
+        const i = tasksDB.findIndex(t => t.id === id);
+        if (i > -1) {
+            tasksDB[i] = {
+                ...tasksDB[i],
+                content,
+                type,
+                deadline: formatDate(deadline),
+                updatedAt: new Date().toISOString()
+            };
+        }
+    } else {
+        tasksDB.push({
+            id: generateId(),
+            startDate: date,
+            deadline: formatDate(deadline),
+            type,
+            content,
+            completed: false,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+        });
+    }
+
+    await saveTasksData(tasksDB);
+    renderWeek();
+    renderExistingTasks(date);
+    document.getElementById('taskForm').reset();
+    document.getElementById('editTaskId').value = '';
+    alert('任务保存成功！');
+}
+
+async function toggleTaskComplete(id) {
+    const i = tasksDB.findIndex(t => t.id === id);
+    if (i > -1) {
+        tasksDB[i].completed = !tasksDB[i].completed;
+        tasksDB[i].updatedAt = new Date().toISOString();
+        await saveTasksData(tasksDB);
+        renderWeek();
+        renderExistingTasks(tasksDB[i].startDate);
+    }
+}
+
+async function deleteTask(id) {
+    if (!confirm('删除后不可恢复哦~')) return;
+    const t = tasksDB.find(x => x.id === id);
+    tasksDB = tasksDB.filter(x => x.id !== id);
+    await saveTasksData(tasksDB);
+    renderWeek();
+    if (t) renderExistingTasks(t.startDate);
+}
+
+document.getElementById('taskModal').addEventListener('click', e => {
+    if (e.target === e.currentTarget) closeModal();
+});
+</script>
+
+</body>
+</html>

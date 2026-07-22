@@ -1,0 +1,1219 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>灵感手札 - 见习女巫</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-blue: #e6f2ff;
+            --accent-blue: #a3d5ff;
+            --soft-blue: #b8daff;
+            --pale-blue: #f0f8ff;
+            --text-dark: #4a5568;
+            --text-light: #718096;
+            --bg-main: var(--primary-blue);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif; }
+
+        body {
+            background: var(--bg-main);
+            min-height: 100vh;
+            padding: 15px;
+            color: var(--text-dark);
+            font-size: 14px;
+        }
+
+        .container { max-width: 1400px; margin: 0 auto; }
+
+        /* 顶部操作栏 */
+        .toolbar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 12px;
+            align-items: center;
+        }
+        .search-box {
+            flex: 1;
+            max-width: 280px;
+            position: relative;
+        }
+        .search-box input {
+            width: 100%;
+            padding: 8px 10px 8px 32px;
+            border: none;
+            border-radius: 20px;
+            background: rgba(255,255,255,0.9);
+            font-size: 13px;
+            box-shadow: 0 1px 4px rgba(163,213,255,0.2);
+        }
+        .search-box i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+            font-size: 12px;
+        }
+        .btn-small {
+            padding: 7px 14px;
+            border: none;
+            border-radius: 18px;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .btn-primary-small {
+            background: linear-gradient(135deg, var(--accent-blue), var(--soft-blue));
+            color: white;
+            box-shadow: 0 2px 8px rgba(163,213,255,0.25);
+        }
+        .btn-secondary-small {
+            background: rgba(255,255,255,0.9);
+            color: var(--text-dark);
+            border: 1px solid var(--soft-blue);
+        }
+        .btn-small:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 10px rgba(163,213,255,0.3);
+        }
+
+        /* 标签筛选栏 */
+        .tag-filter {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 12px;
+            padding-bottom: 10px;
+            border-bottom: 1px dashed rgba(163,213,255,0.25);
+        }
+        .tag-pill {
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+            background: var(--pale-blue);
+            color: var(--text-dark);
+        }
+        .tag-pill:hover { transform: scale(1.05); }
+        .tag-pill.active {
+            border-color: var(--accent-blue);
+            box-shadow: 0 1px 4px rgba(163,213,255,0.25);
+        }
+
+        /* 灵感网格 */
+        .ideas-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+            gap: 10px;
+        }
+
+        /* 灵感卡片 */
+        .idea-card {
+            background: rgba(255,255,255,0.9);
+            border-radius: 10px;
+            padding: 10px;
+            box-shadow: 0 2px 8px rgba(163,213,255,0.15);
+            transition: all 0.2s;
+            position: relative;
+            min-height: 140px;
+            display: flex;
+            flex-direction: column;
+            border-top: 3px solid var(--accent-blue);
+            cursor: pointer;
+        }
+        .idea-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(163,213,255,0.25);
+        }
+
+        .idea-date {
+            font-size: 11px;
+            color: var(--text-light);
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .idea-content {
+            font-size: 13px;
+            line-height: 1.4;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+            flex: 1;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .highlight {
+            background: #fff59d;
+            padding: 0 2px;
+            border-radius: 2px;
+        }
+
+        .idea-images {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+        }
+        .idea-image {
+            width: 42px;
+            height: 42px;
+            border-radius: 6px;
+            object-fit: cover;
+            cursor: pointer;
+            border: 1px solid rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+        }
+        .idea-image:hover { transform: scale(1.1); }
+        .more-images {
+            width: 42px;
+            height: 42px;
+            border-radius: 6px;
+            background: rgba(163,213,255,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: var(--text-dark);
+            cursor: pointer;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .idea-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin-bottom: 6px;
+        }
+        .idea-tag {
+            padding: 1px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+            background: var(--pale-blue);
+            color: var(--text-dark);
+        }
+
+        /* 操作按钮 */
+        .idea-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 4px;
+            opacity: 0.6;
+            transition: opacity 0.2s;
+        }
+        .idea-card:hover .idea-actions { opacity: 1; }
+
+        .action-btn {
+            width: 24px;
+            height: 24px;
+            border: none;
+            border-radius: 50%;
+            background: transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            transition: all 0.2s;
+        }
+        .edit-btn { color: var(--accent-blue); }
+        .edit-btn:hover { background: rgba(163,213,255,0.2); }
+        .delete-btn { color: #ff9a9e; }
+        .delete-btn:hover { background: rgba(255,154,158,0.2); }
+
+        /* 空状态 */
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 30px 20px;
+            color: var(--text-light);
+        }
+        .empty-state i { font-size: 28px; margin-bottom: 10px; opacity: 0.5; }
+        .empty-state p { font-size: 13px; }
+
+        /* 模态框 */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.45);
+            z-index: 1000;
+            backdrop-filter: blur(3px);
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+        }
+        .modal.active { display: flex; }
+
+        .modal-content {
+            background: white;
+            border-radius: 14px;
+            width: 100%;
+            max-width: 480px;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 8px 30px rgba(163,213,255,0.25);
+        }
+        .modal-header {
+            padding: 14px 18px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-title {
+            font-size: 16px;
+            color: var(--text-dark);
+            font-weight: 600;
+        }
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 18px;
+            color: var(--text-light);
+            cursor: pointer;
+            padding: 4px;
+        }
+        .modal-body { padding: 18px; }
+        .modal-footer {
+            padding: 14px 18px;
+            border-top: 1px solid #f0f0f0;
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        /* 表单 */
+        .form-group { margin-bottom: 14px; }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 13px;
+            color: var(--text-light);
+            font-weight: 500;
+        }
+        .form-group textarea,
+        .form-group input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            font-size: 13px;
+            background: #fafafa;
+            font-family: inherit;
+        }
+        .form-group textarea:focus,
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 2px rgba(163,213,255,0.25);
+            background: white;
+        }
+
+        /* 标签管理 */
+        .tag-manage-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid #f5f5f5;
+        }
+        .tag-color {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            border: 1px solid #eee;
+            background: var(--pale-blue);
+        }
+        .tag-name-input {
+            flex: 1;
+            padding: 5px 8px;
+            border: 1px solid #eee;
+            border-radius: 6px;
+            font-size: 13px;
+        }
+        .tag-action-btn {
+            padding: 4px 8px;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        .tag-delete-btn { background: #ffebee; color: #ff9a9e; }
+        .tag-add-btn { background: #e8f5e9; color: #4caf50; }
+
+        .image-previews {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .image-preview-container { position: relative; }
+        .image-preview {
+            width: 70px;
+            height: 70px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 1px solid #eee;
+        }
+        .remove-image-btn {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #ff9a9e;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 图片放大 */
+        .image-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        .image-modal.active { display: flex; }
+        .image-modal img {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+        .image-navigation {
+            position: absolute;
+            bottom: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        .nav-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+        .nav-btn:hover { background: rgba(255,255,255,0.3); }
+        .image-counter {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.5);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+        }
+
+        /* 详情模态框样式 */
+        .detail-content {
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--text-dark);
+            margin-bottom: 15px;
+            white-space: pre-wrap;
+        }
+        .detail-images {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+        .detail-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+            object-fit: cover;
+            cursor: pointer;
+            border: 1px solid rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+        }
+        .detail-image:hover { transform: scale(1.05); }
+        .detail-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 15px;
+        }
+        .detail-tag {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            background: var(--pale-blue);
+            color: var(--text-dark);
+        }
+        .detail-date {
+            font-size: 12px;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .detail-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        /* 滚动条 */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--accent-blue); border-radius: 3px; }
+
+        @media (max-width: 768px) {
+            .toolbar { flex-wrap: wrap; }
+            .search-box { max-width: 100%; flex: 1 1 100%; }
+            .ideas-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+        }
+
+        /* ===== API Key 弹窗样式 ===== */
+        #apiKeyModal {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.45);
+            z-index: 99999;
+            display: flex; align-items: center; justify-content: center;
+        }
+        #apiKeyModal.hidden { display: none; }
+        .api-key-box {
+            background: white;
+            padding: 28px 24px;
+            border-radius: 14px;
+            width: 360px;
+            text-align: center;
+            box-shadow: 0 8px 24px rgba(163,213,255,0.25);
+        }
+        .api-key-box h3 {
+            margin-bottom: 14px;
+            color: var(--text-dark);
+            font-size: 1.1em;
+        }
+        .api-key-box input {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 0.95em;
+            margin-bottom: 12px;
+        }
+        .api-key-box button {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--accent-blue), var(--soft-blue));
+            color: white;
+            font-size: 1em;
+            cursor: pointer;
+        }
+        .api-key-tip {
+            font-size: 0.75em;
+            color: var(--text-light);
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- ===== API Key 弹窗 ===== -->
+<div id="apiKeyModal">
+    <div class="api-key-box">
+        <h3>🔑 请输入 GitHub Token</h3>
+        <input id="apiKeyInput" type="password" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+        <button onclick="saveApiKey()">保存并进入</button>
+        <div class="api-key-tip">
+            只需输入一次，Token 仅保存在本浏览器<br>
+            权限仅需勾选 <strong>gist</strong>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <!-- 顶部工具栏 -->
+    <div class="toolbar">
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="搜索灵感内容..." oninput="filterIdeas()">
+        </div>
+        <button class="btn-small btn-primary-small" onclick="openIdeaModal()">
+            <i class="fas fa-plus"></i> 新增灵感
+        </button>
+        <button class="btn-small btn-secondary-small" onclick="openTagManageModal()">
+            <i class="fas fa-tags"></i> 管理标签
+        </button>
+    </div>
+
+    <!-- 标签筛选栏 -->
+    <div class="tag-filter" id="tagFilter"></div>
+
+    <!-- 灵感网格 -->
+    <div class="ideas-grid" id="ideasGrid"></div>
+</div>
+
+<!-- 灵感详情模态框 -->
+<div class="modal" id="ideaDetailModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">
+                <i class="fas fa-lightbulb"></i> 灵感详情
+            </h3>
+            <button class="modal-close" onclick="closeIdeaDetailModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="detail-date" id="detailDate">
+                <i class="far fa-calendar"></i> <span></span>
+            </div>
+            <div class="detail-content" id="detailContent"></div>
+            <div class="detail-images" id="detailImages"></div>
+            <div class="detail-tags" id="detailTags"></div>
+            <div class="detail-actions">
+                <button class="btn-small btn-primary-small" onclick="editCurrentIdea()">
+                    <i class="fas fa-edit"></i> 编辑
+                </button>
+                <button class="btn-small btn-secondary-small" onclick="deleteCurrentIdea()">
+                    <i class="fas fa-trash"></i> 删除
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 新增/编辑灵感模态框 -->
+<div class="modal" id="ideaModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title" id="ideaModalTitle">
+                <i class="fas fa-lightbulb"></i> 记录灵感
+            </h3>
+            <button class="modal-close" onclick="closeIdeaModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="ideaForm" onsubmit="saveIdea(event)">
+                <div class="form-group">
+                    <label><i class="fas fa-align-left"></i> 灵感内容 *</label>
+                    <textarea id="ideaContent" required placeholder="记录突然冒出来的想法..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-tags"></i> 标签（用逗号分隔）</label>
+                    <input type="text" id="ideaTags" placeholder="比如：创意,魔法,剧情">
+                    <div id="tagSuggestions" style="margin-top: 8px; display: flex; flex-wrap: wrap; gap: 6px;"></div>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-images"></i> 上传配图（可选，可多选）</label>
+                    <input type="file" id="ideaImages" accept="image/*" multiple onchange="previewImages(event)">
+                    <div id="imagePreviews" class="image-previews"></div>
+                </div>
+                <input type="hidden" id="ideaId">
+                <input type="hidden" id="ideaImagesData">
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn-small btn-secondary-small" onclick="closeIdeaModal()">取消</button>
+            <button type="submit" form="ideaForm" class="btn-small btn-primary-small">保存</button>
+        </div>
+    </div>
+</div>
+
+<!-- 标签管理模态框 -->
+<div class="modal" id="tagManageModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">
+                <i class="fas fa-tags"></i> 管理标签
+            </h3>
+            <button class="modal-close" onclick="closeTagManageModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div id="tagList"></div>
+            <div class="form-group" style="margin-top: 18px;">
+                <label><i class="fas fa-plus"></i> 新增标签</label>
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" id="newTagName" placeholder="标签名" style="flex: 1; padding: 8px 12px; border: 1px solid #eee; border-radius: 8px; font-size: 13px;">
+                    <button class="btn-small btn-primary-small" onclick="addNewTag()">添加</button>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn-small btn-secondary-small" onclick="closeTagManageModal()">关闭</button>
+        </div>
+    </div>
+</div>
+
+<!-- 图片放大模态框 -->
+<div class="image-modal" id="imageZoomModal" onclick="closeImageZoom()">
+    <div class="image-counter" id="imageCounter"></div>
+    <img id="zoomedImage" src="" alt="放大图片">
+    <div class="image-navigation">
+        <button class="nav-btn" onclick="event.stopPropagation(); navigateImage(-1)">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+        <button class="nav-btn" onclick="event.stopPropagation(); navigateImage(1)">
+            <i class="fas fa-chevron-right"></i>
+        </button>
+    </div>
+</div>
+
+<script>
+/* ==========================================
+   API Key 管理（不再写死 Token）
+   ========================================== */
+const STORAGE_KEY = 'witch_api_key';
+const GIST_ID = 'c9b52465d580c277cb7e55ac9e589ed4';
+const GIST_FILE = 'witchlife.json';
+const IDEAS_DB_KEY = 'witchIdeasDB';
+const TAGS_DB_KEY = 'witchIdeaTags';
+
+function getApiKey() {
+    return localStorage.getItem(STORAGE_KEY) || '';
+}
+
+function saveApiKey() {
+    const key = document.getElementById('apiKeyInput').value.trim();
+    if (!key) return alert('请输入 Token');
+    localStorage.setItem(STORAGE_KEY, key);
+    document.getElementById('apiKeyModal').classList.add('hidden');
+    loadIdeasData();
+}
+
+/* 页面加载时判断是否已输入 Key */
+document.addEventListener('DOMContentLoaded', () => {
+    if (getApiKey()) {
+        document.getElementById('apiKeyModal').classList.add('hidden');
+        loadIdeasData();
+    }
+});
+
+/* ==========================================
+   Gist 云端数据库（动态读取 Token）
+   ========================================== */
+async function gistLoad() {
+    const res = await fetch(`https://api.github.com/gists/${GIST_ID}`);
+    if (!res.ok) throw new Error();
+    const gist = await res.json();
+    if (gist.files[GIST_FILE]?.content) {
+        return JSON.parse(gist.files[GIST_FILE].content);
+    }
+    return {};
+}
+
+async function gistSave(data) {
+    const token = getApiKey();
+    if (!token) return false;
+    const res = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
+        method: 'PATCH',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            files: {
+                [GIST_FILE]: { content: JSON.stringify(data, null, 2) }
+            }
+        })
+    });
+    return res.ok;
+}
+
+async function getIdeasData() {
+    const all = await gistLoad();
+    const ideas = all[IDEAS_DB_KEY] || [];
+    // 兼容旧数据：将单张图片转换为图片数组
+    return ideas.map(idea => {
+        if (idea.imageData && !idea.images) {
+            return { ...idea, images: [idea.imageData] };
+        }
+        return idea;
+    });
+}
+
+async function saveIdeasData(ideas) {
+    const all = await gistLoad();
+    all[IDEAS_DB_KEY] = ideas;
+    return gistSave(all);
+}
+
+async function getTagsData() {
+    const all = await gistLoad();
+    return all[TAGS_DB_KEY] || [];
+}
+
+async function saveTagsData(tags) {
+    const all = await gistLoad();
+    all[TAGS_DB_KEY] = tags;
+    return gistSave(all);
+}
+
+/* ==========================================
+   默认数据（首次使用时）
+   ========================================== */
+const DEFAULT_TAGS = [
+    { id: '1', name: '创意', color: '#e1bee7' },
+    { id: '2', name: '剧情', color: '#b2ebf2' },
+    { id: '3', name: '魔法', color: '#c8e6c9' },
+    { id: '4', name: '日常', color: '#fff9c4' },
+    { id: '5', name: '待完善', color: '#ffccbc' }
+];
+
+/* ==========================================
+   内存缓存
+   ========================================== */
+let ideasDB = [];
+let tagsDB = [];
+
+/* ==========================================
+   初始化加载
+   ========================================== */
+async function loadIdeasData() {
+    try {
+        ideasDB = await getIdeasData();
+        tagsDB = await getTagsData();
+        if (tagsDB.length === 0) {
+            tagsDB = DEFAULT_TAGS;
+            await saveTagsData(tagsDB);
+        }
+        updateAllViews();
+    } catch {
+        alert('⚠️ 读取云端数据失败，请检查 Token 是否正确');
+    }
+}
+
+/* ==========================================
+   工具函数
+   ========================================== */
+function generateId() {
+    return Date.now().toString(36) + Math.random().toString(36).substr(2);
+}
+
+function formatFullDate(dateStr) {
+    const d = new Date(dateStr);
+    return `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日 ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+}
+
+function formatShortDate(dateStr) {
+    const d = new Date(dateStr);
+    return `${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+function highlightText(text, keyword) {
+    if (!keyword) return text;
+    const reg = new RegExp(`(${keyword})`, 'gi');
+    return text.replace(reg, '<span class="highlight">$1</span>');
+}
+
+function getRandomPastelColor() {
+    const colors = ['#e1bee7','#b2ebf2','#c8e6c9','#fff9c4','#ffccbc','#f8bbd0','#d1c4e9'];
+    return colors[Math.floor(Math.random() * colors.length)];
+}
+
+/* ==========================================
+   渲染逻辑
+   ========================================== */
+let currentSearch = '';
+let currentTag = 'all';
+let currentImageIndex = 0;
+let currentImageList = [];
+let currentViewingIdeaId = null;
+
+function renderTagsFilter() {
+    const container = document.getElementById('tagFilter');
+    const tagMap = {};
+    tagsDB.forEach(t => tagMap[t.name] = t.color);
+    
+    container.innerHTML = `
+        <div class="tag-pill tag-all ${currentTag === 'all' ? 'active' : ''}" onclick="filterByTag('all')">
+            全部
+        </div>
+        ${tagsDB.map(tag => `
+            <div class="tag-pill ${currentTag === tag.name ? 'active' : ''}" 
+                 onclick="filterByTag('${tag.name}')"
+                 style="background: ${tag.color}; color: #37474f;">
+                ${tag.name}
+            </div>
+        `).join('')}
+    `;
+}
+
+function renderIdeas() {
+    const grid = document.getElementById('ideasGrid');
+    const tagMap = {};
+    tagsDB.forEach(t => tagMap[t.name] = t.color);
+
+    let filtered = ideasDB.filter(idea => {
+        const matchSearch = !currentSearch || 
+            idea.content.toLowerCase().includes(currentSearch.toLowerCase());
+        const matchTag = currentTag === 'all' || idea.tags.includes(currentTag);
+        return matchSearch && matchTag;
+    });
+
+    filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+    if (filtered.length === 0) {
+        grid.innerHTML = `
+            <div class="empty-state">
+                <i class="fas fa-lightbulb"></i>
+                <p>还没有灵感记录~<br>点击「新增灵感」开始记录吧！</p>
+            </div>
+        `;
+        return;
+    }
+
+    grid.innerHTML = filtered.map(idea => `
+        <div class="idea-card" onclick="openIdeaDetailModal('${idea.id}')">
+            <div class="idea-date">
+                <i class="far fa-calendar"></i> ${formatShortDate(idea.createdAt)}
+            </div>
+            ${idea.images && idea.images.length > 0 ? `
+                <div class="idea-images">
+                    ${idea.images.slice(0, 3).map((img, index) => `
+                        <img class="idea-image" src="${img}" onclick="event.stopPropagation(); zoomImageFromArray('${idea.id}', ${index})">
+                    `).join('')}
+                    ${idea.images.length > 3 ? `
+                        <div class="more-images" onclick="event.stopPropagation(); openIdeaDetailModal('${idea.id}')">
+                            +${idea.images.length - 3}
+                        </div>
+                    ` : ''}
+                </div>
+            ` : ''}
+            <div class="idea-content">${highlightText(idea.content, currentSearch)}</div>
+            <div class="idea-tags">
+                ${idea.tags.map(tag => `
+                    <span class="idea-tag" style="background: ${tagMap[tag] || '#eee'}; color: #37474f;">
+                        ${tag}
+                    </span>
+                `).join('')}
+            </div>
+            <div class="idea-actions" onclick="event.stopPropagation()">
+                <button class="action-btn edit-btn" onclick="event.stopPropagation(); openIdeaModal('${idea.id}')" title="编辑">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button class="action-btn delete-btn" onclick="event.stopPropagation(); deleteIdea('${idea.id}')" title="删除">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        </div>
+    `).join('');
+}
+
+function filterIdeas() {
+    currentSearch = document.getElementById('searchInput').value.trim();
+    renderIdeas();
+}
+
+function filterByTag(tagName) {
+    currentTag = tagName;
+    renderTagsFilter();
+    renderIdeas();
+}
+
+function updateAllViews() {
+    renderTagsFilter();
+    renderIdeas();
+}
+
+/* ==========================================
+   灵感详情
+   ========================================== */
+function openIdeaDetailModal(id) {
+    const idea = ideasDB.find(i => i.id === id);
+    if (!idea) return;
+
+    currentViewingIdeaId = id;
+    document.querySelector('#detailDate span').textContent = formatFullDate(idea.createdAt);
+    document.getElementById('detailContent').textContent = idea.content;
+    
+    const imagesContainer = document.getElementById('detailImages');
+    if (idea.images && idea.images.length > 0) {
+        imagesContainer.innerHTML = idea.images.map((img, index) => `
+            <img class="detail-image" src="${img}" onclick="zoomImageFromArray('${id}', ${index})">
+        `).join('');
+    } else {
+        imagesContainer.innerHTML = '';
+    }
+    
+    const tagsContainer = document.getElementById('detailTags');
+    const tagMap = {};
+    tagsDB.forEach(t => tagMap[t.name] = t.color);
+    if (idea.tags && idea.tags.length > 0) {
+        tagsContainer.innerHTML = idea.tags.map(tag => `
+            <span class="detail-tag" style="background: ${tagMap[tag] || '#eee'}; color: #37474f;">
+                ${tag}
+            </span>
+        `).join('');
+    } else {
+        tagsContainer.innerHTML = '';
+    }
+    
+    document.getElementById('ideaDetailModal').classList.add('active');
+}
+
+function closeIdeaDetailModal() {
+    document.getElementById('ideaDetailModal').classList.remove('active');
+    currentViewingIdeaId = null;
+}
+
+function editCurrentIdea() {
+    if (currentViewingIdeaId) {
+        closeIdeaDetailModal();
+        openIdeaModal(currentViewingIdeaId);
+    }
+}
+
+function deleteCurrentIdea() {
+    if (currentViewingIdeaId) {
+        closeIdeaDetailModal();
+        deleteIdea(currentViewingIdeaId);
+    }
+}
+
+/* ==========================================
+   灵感 CRUD
+   ========================================== */
+function openIdeaModal(id = null) {
+    const modal = document.getElementById('ideaModal');
+    const title = document.getElementById('ideaModalTitle');
+    document.getElementById('imagePreviews').innerHTML = '';
+
+    if (id) {
+        const idea = ideasDB.find(i => i.id === id);
+        if (!idea) return;
+        title.innerHTML = '<i class="fas fa-edit"></i> 编辑灵感';
+        document.getElementById('ideaId').value = idea.id;
+        document.getElementById('ideaContent').value = idea.content;
+        document.getElementById('ideaTags').value = idea.tags.join(', ');
+        const images = idea.images || [];
+        document.getElementById('ideaImagesData').value = JSON.stringify(images);
+        images.forEach((imgData, index) => addImagePreview(imgData, index));
+    } else {
+        title.innerHTML = '<i class="fas fa-lightbulb"></i> 记录灵感';
+        document.getElementById('ideaForm').reset();
+        document.getElementById('ideaId').value = '';
+        document.getElementById('ideaImagesData').value = JSON.stringify([]);
+    }
+
+    const suggestions = document.getElementById('tagSuggestions');
+    suggestions.innerHTML = tagsDB.map(tag => `
+        <span class="tag-pill" onclick="addTagSuggestion('${tag.name}')" 
+              style="background: ${tag.color}; color: #37474f; cursor: pointer;">
+            ${tag.name}
+        </span>
+    `).join('');
+
+    modal.classList.add('active');
+}
+
+function closeIdeaModal() {
+    document.getElementById('ideaModal').classList.remove('active');
+}
+
+function addTagSuggestion(tagName) {
+    const input = document.getElementById('ideaTags');
+    const currentTags = input.value.split(',').map(t => t.trim()).filter(t => t);
+    if (!currentTags.includes(tagName)) {
+        input.value = currentTags.length > 0 ? `${input.value}, ${tagName}` : tagName;
+    }
+}
+
+function previewImages(event) {
+    const files = Array.from(event.target.files);
+    files.forEach((file, index) => {
+        const reader = new FileReader();
+        reader.onload = e => {
+            const imagesData = JSON.parse(document.getElementById('ideaImagesData').value || '[]');
+            imagesData.push(e.target.result);
+            document.getElementById('ideaImagesData').value = JSON.stringify(imagesData);
+            addImagePreview(e.target.result, imagesData.length - 1);
+        };
+        reader.readAsDataURL(file);
+    });
+}
+
+function addImagePreview(imageData, index) {
+    const previewsContainer = document.getElementById('imagePreviews');
+    const previewContainer = document.createElement('div');
+    previewContainer.className = 'image-preview-container';
+    previewContainer.innerHTML = `
+        <img class="image-preview" src="${imageData}" alt="预览图片">
+        <button type="button" class="remove-image-btn" onclick="removeImage(${index})">
+            <i class="fas fa-times"></i>
+        </button>
+    `;
+    previewsContainer.appendChild(previewContainer);
+}
+
+function removeImage(index) {
+    const imagesData = JSON.parse(document.getElementById('ideaImagesData').value || '[]');
+    imagesData.splice(index, 1);
+    document.getElementById('ideaImagesData').value = JSON.stringify(imagesData);
+    const previewsContainer = document.getElementById('imagePreviews');
+    previewsContainer.innerHTML = '';
+    imagesData.forEach((imgData, idx) => addImagePreview(imgData, idx));
+}
+
+async function saveIdea(event) {
+    event.preventDefault();
+    const id = document.getElementById('ideaId').value;
+    const content = document.getElementById('ideaContent').value.trim();
+    const tags = document.getElementById('ideaTags').value.split(',').map(t => t.trim()).filter(t => t);
+    const imagesData = JSON.parse(document.getElementById('ideaImagesData').value || '[]');
+
+    if (!content) {
+        alert('灵感内容不能为空哦~');
+        return;
+    }
+
+    const now = new Date().toISOString();
+
+    if (id) {
+        const index = ideasDB.findIndex(i => i.id === id);
+        if (index !== -1) {
+            ideasDB[index] = { ...ideasDB[index], content, tags, images: imagesData, updatedAt: now };
+        }
+    } else {
+        ideasDB.push({
+            id: generateId(),
+            content,
+            tags,
+            images: imagesData,
+            createdAt: now,
+            updatedAt: now
+        });
+    }
+
+    await saveIdeasData(ideasDB);
+    updateAllViews();
+    closeIdeaModal();
+    alert(id ? '灵感已更新✨' : '灵感已记录✨');
+}
+
+async function deleteIdea(id) {
+    if (!confirm('确定要删除这条灵感吗？')) return;
+    ideasDB = ideasDB.filter(i => i.id !== id);
+    await saveIdeasData(ideasDB);
+    updateAllViews();
+    alert('灵感已消散~');
+}
+
+/* ==========================================
+   标签管理
+   ========================================== */
+function openTagManageModal() {
+    renderTagList();
+    document.getElementById('tagManageModal').classList.add('active');
+}
+
+function closeTagManageModal() {
+    document.getElementById('tagManageModal').classList.remove('active');
+}
+
+function renderTagList() {
+    const container = document.getElementById('tagList');
+    container.innerHTML = tagsDB.map(tag => `
+        <div class="tag-manage-item">
+            <div class="tag-color" style="background: ${tag.color};"></div>
+            <input type="text" class="tag-name-input" value="${tag.name}" id="tagName_${tag.id}">
+            <button class="tag-action-btn tag-delete-btn" onclick="deleteTag('${tag.id}')">删除</button>
+        </div>
+    `).join('');
+}
+
+async function addNewTag() {
+    const input = document.getElementById('newTagName');
+    const name = input.value.trim();
+    if (!name) { alert('请输入标签名~'); return; }
+    if (tagsDB.some(t => t.name === name)) { alert('标签已存在~'); return; }
+    tagsDB.push({ id: generateId(), name, color: getRandomPastelColor() });
+    await saveTagsData(tagsDB);
+    renderTagList();
+    renderTagsFilter();
+    input.value = '';
+}
+
+async function deleteTag(id) {
+    if (!confirm('删除标签会同时从所有灵感中移除该标签，确定吗？')) return;
+    const tagToDelete = tagsDB.find(t => t.id === id);
+    tagsDB = tagsDB.filter(t => t.id !== id);
+    await saveTagsData(tagsDB);
+    ideasDB = ideasDB.map(idea => ({
+        ...idea,
+        tags: idea.tags.filter(t => t !== tagToDelete.name)
+    }));
+    await saveIdeasData(ideasDB);
+    renderTagList();
+    renderTagsFilter();
+    renderIdeas();
+}
+
+/* ==========================================
+   图片放大
+   ========================================== */
+function zoomImageFromArray(ideaId, startIndex = 0) {
+    const idea = ideasDB.find(i => i.id === ideaId);
+    if (!idea || !idea.images || idea.images.length === 0) return;
+    currentImageList = idea.images;
+    currentImageIndex = startIndex;
+    updateZoomedImage();
+    document.getElementById('imageZoomModal').classList.add('active');
+}
+
+function updateZoomedImage() {
+    document.getElementById('zoomedImage').src = currentImageList[currentImageIndex];
+    document.getElementById('imageCounter').textContent = `${currentImageIndex + 1} / ${currentImageList.length}`;
+}
+
+function navigateImage(direction) {
+    event.stopPropagation();
+    currentImageIndex += direction;
+    if (currentImageIndex < 0) currentImageIndex = currentImageList.length - 1;
+    else if (currentImageIndex >= currentImageList.length) currentImageIndex = 0;
+    updateZoomedImage();
+}
+
+function closeImageZoom() {
+    document.getElementById('imageZoomModal').classList.remove('active');
+    currentImageList = [];
+    currentImageIndex = 0;
+}
+
+/* ==========================================
+   点击模态框外部关闭
+   ========================================== */
+document.querySelectorAll('.modal').forEach(modal => {
+    modal.addEventListener('click', e => {
+        if (e.target === modal) modal.classList.remove('active');
+    });
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1317 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>魔法金库 - 见习女巫</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-blue: #e6f2ff;
+            --secondary-blue: #cce7ff;
+            --accent-blue: #a3d5ff;
+            --soft-blue: #b8daff;
+            --pale-blue: #f0f8ff;
+            
+            --text-dark: #4a5568;
+            --text-light: #718096;
+            --text-lighter: #a0aec0;
+            
+            --card-bg: rgba(255, 255, 255, 0.65);
+            --card-border: rgba(255, 255, 255, 0.4);
+            --shadow-sm: 0 2px 8px rgba(174, 200, 236, 0.1);
+            --shadow-md: 0 4px 12px rgba(174, 200, 236, 0.15);
+            --radius-sm: 8px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+            
+            --border-light: 1px solid rgba(226, 232, 240, 0.3);
+        }
+
+        * { 
+            box-sizing: border-box; 
+            font-family: 'Noto Sans SC', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif; 
+        }
+
+        body {
+            background-color: var(--primary-blue);
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            color: var(--text-dark);
+            overflow-x: hidden;
+            line-height: 1.5;
+            font-size: 13px;
+        }
+
+        .finance-container { 
+            max-width: 1600px; 
+            margin: auto; 
+        }
+
+        .header {
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            margin-bottom: 24px; 
+            padding: 18px 0 12px 0;
+            background: transparent;
+            backdrop-filter: none;
+            border-radius: 0;
+            box-shadow: none;
+            border: none;
+            position: relative;
+        }
+        
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: var(--accent-blue);
+            border-radius: 2px;
+        }
+        
+        .header h1 { 
+            color: var(--text-dark); 
+            margin: 0; 
+            font-weight: 300;
+            letter-spacing: 2px;
+            font-family: 'Noto Serif SC', serif;
+            font-size: 1.6em;
+        }
+        
+        .header h1 i { 
+            margin-right: 10px; 
+            color: var(--accent-blue);
+        }
+        
+        .back-link { 
+            color: var(--text-light); 
+            text-decoration: none; 
+            font-size: 0.9em;
+            transition: color 0.2s;
+        }
+        
+        .back-link:hover { 
+            color: var(--accent-blue);
+        }
+
+        .export-btn {
+            background: linear-gradient(135deg, #a1c4fd, #c2e9fb);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-size: 0.85em;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            letter-spacing: 0.5px;
+        }
+        
+        .export-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .overview-bar { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); 
+            gap: 15px; 
+            margin-bottom: 24px; 
+        }
+        
+        .overview-card {
+            background: var(--card-bg); 
+            backdrop-filter: blur(8px);
+            border-radius: var(--radius-md); 
+            padding: 12px;
+            display: flex; 
+            align-items: center; 
+            gap: 12px;
+            border: var(--border-light);
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+            min-height: 70px;
+        }
+        
+        .overview-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            background: rgba(255, 255, 255, 0.75);
+        }
+        
+        .overview-icon { 
+            font-size: 1.6em; 
+            color: var(--accent-blue); 
+            background: rgba(163, 213, 255, 0.15);
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .overview-text h3 { 
+            margin: 0 0 3px 0; 
+            color: var(--text-light); 
+            font-size: 0.8em;
+            font-weight: 500;
+        }
+        
+        .overview-text .amount { 
+            margin: 0; 
+            font-size: 1.3em; 
+            font-weight: 600; 
+            color: var(--text-dark);
+        }
+        
+        .overview-text .sub-text { 
+            margin: 3px 0 0 0; 
+            font-size: 0.7em; 
+            color: var(--text-lighter); 
+        }
+
+        .main-grid { 
+            display: grid; 
+            grid-template-columns: 1fr 1.5fr 1fr; 
+            gap: 18px; 
+        }
+        
+        .panel {
+            background: var(--card-bg); 
+            backdrop-filter: blur(8px);
+            border-radius: var(--radius-md); 
+            padding: 15px;
+            border: var(--border-light);
+            box-shadow: var(--shadow-sm);
+            max-height: calc(100vh - 260px); 
+            overflow-y: auto;
+            transition: all 0.3s ease;
+        }
+        
+        .panel:hover {
+            box-shadow: var(--shadow-md);
+        }
+        
+        .panel-title { 
+            margin-top: 0; 
+            color: var(--text-dark); 
+            border-bottom: var(--border-light);
+            padding-bottom: 8px;
+            font-size: 0.95em;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+        
+        .panel-title i { 
+            margin-right: 8px; 
+            color: var(--accent-blue);
+        }
+
+        .editable-field {
+            display: inline-flex; 
+            align-items: center; 
+            gap: 5px;
+            cursor: pointer; 
+            padding: 1px 5px; 
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+        
+        .editable-field:hover { 
+            background-color: rgba(163, 213, 255, 0.15); 
+        }
+        
+        .editable-value { 
+            font-weight: inherit; 
+            color: inherit; 
+        }
+        
+        .edit-icon { 
+            opacity: 0.5; 
+            font-size: 0.7em; 
+            transition: opacity 0.2s;
+            color: var(--accent-blue);
+        }
+        
+        .editable-field:hover .edit-icon { 
+            opacity: 1; 
+        }
+
+        .account-card {
+            background: rgba(255, 255, 255, 0.5); 
+            border-radius: var(--radius-sm);
+            padding: 10px; 
+            margin-bottom: 10px;
+            transition: transform 0.3s;
+            border: var(--border-light);
+        }
+        
+        .account-card:hover { 
+            transform: translateY(-2px); 
+        }
+        
+        .account-header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
+        
+        .account-name { 
+            font-weight: 600; 
+            font-size: 0.9em;
+            color: var(--text-dark);
+        }
+        
+        .account-balance { 
+            font-size: 1.2em; 
+            font-weight: 600; 
+            color: var(--text-dark);
+        }
+        
+        .account-balance i { 
+            color: var(--accent-blue); 
+            margin-right: 4px; 
+        }
+        
+        .progress-bar-container { 
+            height: 5px; 
+            background: rgba(255, 255, 255, 0.5); 
+            border-radius: 3px; 
+            margin-top: 8px; 
+            overflow: hidden; 
+        }
+        
+        .progress-bar { 
+            height: 100%; 
+            background: linear-gradient(90deg, var(--accent-blue), var(--soft-blue)); 
+            width: 0%; 
+            transition: width 1s ease; 
+            border-radius: 3px;
+        }
+        
+        .goal-text { 
+            font-size: 0.65em; 
+            color: var(--text-light); 
+            margin-top: 5px; 
+            text-align: right; 
+        }
+
+        .form-group { 
+            margin-bottom: 10px; 
+        }
+        
+        .form-group label { 
+            display: block; 
+            margin-bottom: 3px; 
+            font-weight: 500; 
+            color: var(--text-light);
+            font-size: 0.8em;
+        }
+        
+        .form-group input, 
+        .form-group select, 
+        .form-group textarea {
+            width: 100%; 
+            padding: 8px; 
+            border: var(--border-light);
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.8); 
+            font-size: 0.85em;
+            color: var(--text-dark);
+            transition: all 0.2s;
+        }
+        
+        .form-group input:focus, 
+        .form-group select:focus, 
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 2px rgba(163, 213, 255, 0.2);
+        }
+        
+        .btn-magic {
+            width: 100%; 
+            padding: 10px; 
+            border: none; 
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--accent-blue), var(--soft-blue));
+            color: white; 
+            font-size: 0.9em; 
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 6px;
+            letter-spacing: 0.5px;
+        }
+        
+        .btn-magic:hover { 
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-expense {
+            background: linear-gradient(135deg, #ff9a9e, #fad0c4) !important;
+        }
+        
+        .btn-income {
+            background: linear-gradient(135deg, #a1c4fd, #c2e9fb) !important;
+        }
+
+        .transaction-list { 
+            list-style: none; 
+            padding: 0; 
+            margin: 0; 
+        }
+        
+        .transaction-item {
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            padding: 8px; 
+            border-bottom: var(--border-light);
+            animation: fadeIn 0.5s;
+            transition: background-color 0.2s;
+        }
+        
+        .transaction-item:hover {
+            background-color: rgba(163, 213, 255, 0.05);
+        }
+        
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: translateY(8px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+        
+        .trans-icon { 
+            font-size: 1em; 
+            margin-right: 8px; 
+        }
+        
+        .trans-details { 
+            flex-grow: 1; 
+        }
+        
+        .trans-desc { 
+            font-weight: 600; 
+            font-size: 0.85em;
+            color: var(--text-dark);
+        }
+        
+        .trans-meta { 
+            font-size: 0.7em; 
+            color: var(--text-light); 
+            margin-top: 1px;
+        }
+        
+        .trans-amount { 
+            font-weight: 600; 
+            font-size: 0.95em; 
+        }
+        
+        .income { 
+            color: #7eb8da; 
+        }
+        
+        .expense { 
+            color: #ff9a9e; 
+        }
+
+        .budget-item { 
+            margin-bottom: 12px; 
+            position: relative; 
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: var(--radius-sm);
+            border: var(--border-light);
+        }
+        
+        .budget-header { 
+            display: flex; 
+            justify-content: space-between; 
+            margin-bottom: 6px; 
+        }
+        
+        .budget-name { 
+            font-weight: 600;
+            font-size: 0.85em;
+            color: var(--text-dark);
+        }
+        
+        .budget-values { 
+            font-size: 0.8em;
+            color: var(--text-light);
+        }
+        
+        .budget-controls { 
+            display: flex; 
+            gap: 4px; 
+        }
+        
+        .budget-controls button {
+            background: none; 
+            border: none; 
+            cursor: pointer;
+            color: var(--text-lighter);
+            font-size: 0.75em; 
+            padding: 0 4px;
+            transition: color 0.2s;
+        }
+        
+        .budget-controls button:hover { 
+            color: var(--accent-blue); 
+        }
+        
+        .budget-item.over-budget .budget-name { 
+            color: #ff9a9e; 
+        }
+        
+        .budget-item.over-budget .progress-bar { 
+            background: linear-gradient(135deg, #ff9a9e, #fad0c4); 
+        }
+        
+        .curse-warning { 
+            color: #ff9a9e;
+            font-size: 0.7em; 
+            margin-top: 6px; 
+            display: none; 
+            padding: 5px 8px;
+            background: rgba(255, 154, 158, 0.1);
+            border-radius: 4px;
+        }
+        
+        .budget-item.over-budget .curse-warning { 
+            display: block; 
+        }
+        
+        .btn-small {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            background: transparent;
+            border: none;
+            color: var(--text-lighter);
+            cursor: pointer;
+            font-size: 0.8em;
+            transition: color 0.2s;
+            padding: 3px;
+            border-radius: 3px;
+        }
+        
+        .btn-small:hover {
+            color: #ff9a9e;
+            background: rgba(255, 154, 158, 0.1);
+        }
+
+        ::-webkit-scrollbar { 
+            width: 5px; 
+        }
+        
+        ::-webkit-scrollbar-track { 
+            background: transparent; 
+        }
+        
+        ::-webkit-scrollbar-thumb { 
+            background: var(--accent-blue); 
+            border-radius: 3px; 
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--soft-blue);
+        }
+
+        @media (max-width: 1200px) {
+            .main-grid { 
+                grid-template-columns: 1fr; 
+            }
+            .panel { 
+                max-height: none; 
+            }
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+                font-size: 12px;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 12px;
+                text-align: center;
+            }
+            
+            .header::after {
+                width: 60px;
+            }
+            
+            .overview-bar {
+                grid-template-columns: 1fr;
+            }
+            
+            .overview-card {
+                min-height: auto;
+            }
+        }
+
+        /* ===== API Key 弹窗样式 ===== */
+        #apiKeyModal {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.45);
+            z-index: 99999;
+            display: flex; align-items: center; justify-content: center;
+        }
+        #apiKeyModal.hidden { display: none; }
+        .api-key-box {
+            background: white;
+            padding: 28px 24px;
+            border-radius: var(--radius-md);
+            width: 360px;
+            text-align: center;
+            box-shadow: var(--shadow-lg);
+        }
+        .api-key-box h3 {
+            margin-bottom: 14px;
+            color: var(--text-dark);
+            font-size: 1.1em;
+        }
+        .api-key-box input {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 0.95em;
+            margin-bottom: 12px;
+        }
+        .api-key-box button {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--accent-blue), var(--soft-blue));
+            color: white;
+            font-size: 1em;
+            cursor: pointer;
+        }
+        .api-key-tip {
+            font-size: 0.75em;
+            color: var(--text-light);
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- ===== API Key 弹窗 ===== -->
+<div id="apiKeyModal">
+    <div class="api-key-box">
+        <h3>🔑 请输入 GitHub Token</h3>
+        <input id="apiKeyInput" type="password" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+        <button onclick="saveApiKey()">保存并进入</button>
+        <div class="api-key-tip">
+            只需输入一次，Token 仅保存在本浏览器<br>
+            权限仅需勾选 <strong>gist</strong>
+        </div>
+    </div>
+</div>
+
+<div class="finance-container">
+    <div class="header">
+        <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> 返回观测台</a>
+        <h1><i class="fas fa-gem"></i> 魔法金库</h1>
+        <div>
+            <button id="exportBtn" class="export-btn">
+                <i class="fas fa-download"></i> 导出数据
+            </button>
+        </div>
+    </div>
+
+    <div class="overview-bar">
+        <div class="overview-card">
+            <div class="overview-icon"><i class="fas fa-coins"></i></div>
+            <div class="overview-text">
+                <h3>魔力总储量</h3>
+                <p class="amount" id="totalGold">0 🪙</p>
+            </div>
+        </div>
+        <div class="overview-card">
+            <div class="overview-icon"><i class="fas fa-bolt"></i></div>
+            <div class="overview-text">
+                <h3>本月魔力结余</h3>
+                <p class="amount" id="monthBalance">0 🪙</p>
+                <p class="sub-text">(收入 - 支出)</p>
+            </div>
+        </div>
+        <div class="overview-card">
+            <div class="overview-icon"><i class="fas fa-star"></i></div>
+            <div class="overview-text">
+                <h3>幸运指数</h3>
+                <p class="amount" id="luckIndex">100%</p>
+                <p class="sub-text">(预算控制良好)</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-grid">
+        <div class="panel">
+            <h2 class="panel-title"><i class="fas fa-university"></i> 魔力金库</h2>
+            
+            <div class="account-card">
+                <div class="account-header">
+                    <span class="account-name"><i class="fas fa-landmark"></i> 奥术枢纽银行</span>
+                </div>
+                <div class="account-balance">
+                    <i class="fas fa-coins"></i> 
+                    <span class="editable-field" onclick="makeEditable('bankBalance', 'bank')">
+                        <span id="bankBalance" class="editable-value">0</span>
+                        <i class="fas fa-pencil-alt edit-icon"></i>
+                    </span>
+                </div>
+            </div>
+
+            <div class="account-card">
+                <div class="account-header">
+                    <span class="account-name"><i class="fas fa-cloud"></i> 云端聚宝盆</span>
+                </div>
+                <div class="account-balance">
+                    <i class="fas fa-coins"></i> 
+                    <span class="editable-field" onclick="makeEditable('alipayBalance', 'alipay')">
+                        <span id="alipayBalance" class="editable-value">0</span>
+                        <i class="fas fa-pencil-alt edit-icon"></i>
+                    </span>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="savingsProgress"></div>
+                </div>
+                <div class="goal-text">
+                    目标：<span class="editable-field" onclick="makeEditable('savingsGoalName', 'goalName')">
+                        <span id="savingsGoalName" class="editable-value">星辰扫帚</span>
+                        <i class="fas fa-pencil-alt edit-icon"></i>
+                    </span>
+                    (<span class="editable-field" onclick="makeEditable('savingsGoalTarget', 'goalTarget')">
+                        <span id="savingsGoalTarget" class="editable-value">5000</span>
+                        <i class="fas fa-pencil-alt edit-icon"></i>
+                    </span>🪙)
+                </div>
+            </div>
+
+            <div class="account-card">
+                <div class="account-header">
+                    <span class="account-name"><i class="fas fa-wallet"></i> 随身零钱袋</span>
+                </div>
+                <div class="account-balance">
+                    <i class="fas fa-coins"></i> 
+                    <span class="editable-field" onclick="makeEditable('wechatBalance', 'wechat')">
+                        <span id="wechatBalance" class="editable-value">0</span>
+                        <i class="fas fa-pencil-alt edit-icon"></i>
+                    </span>
+                </div>
+            </div>
+
+            <h3 class="panel-title" style="font-size:0.9em; margin-top:20px;"><i class="fas fa-exchange-alt"></i> 金库划转</h3>
+            <div class="form-group">
+                <select id="transferFrom">
+                    <option value="bank">奥术枢纽银行</option>
+                    <option value="alipay">云端聚宝盆</option>
+                    <option value="wechat">随身零钱袋</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <select id="transferTo">
+                    <option value="alipay">云端聚宝盆</option>
+                    <option value="bank">奥术枢纽银行</option>
+                    <option value="wechat">随身零钱袋</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <input type="number" id="transferAmount" placeholder="划转金币数量" step="0.01">
+            </div>
+            <button class="btn-magic" onclick="transfer()">执行传送术</button>
+        </div>
+
+        <div class="panel">
+            <h2 class="panel-title"><i class="fas fa-scroll"></i> 魔力流转记录</h2>
+            
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                <button class="btn-magic btn-expense" onclick="setTransType('expense')">记录消耗 (支出)</button>
+                <button class="btn-magic btn-income" onclick="setTransType('income')">记录汲取 (收入)</button>
+            </div>
+
+            <div id="transactionForm" style="display:none; margin-top:12px; border-top:var(--border-light); padding-top:12px;">
+                <div class="form-group">
+                    <input type="number" id="transAmount" placeholder="金币数量" step="0.01">
+                </div>
+                <div class="form-group">
+                    <input type="text" id="transDesc" placeholder="用途 (例：购买月光粉尘)">
+                </div>
+                <div class="form-group">
+                    <select id="transAccount">
+                        <option value="bank">奥术枢纽银行</option>
+                        <option value="alipay">云端聚宝盆</option>
+                        <option value="wechat">随身零钱袋</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <select id="transCategory">
+                    </select>
+                </div>
+                <input type="hidden" id="transType" value="expense">
+                <button class="btn-magic" onclick="addTransaction()">封存记录</button>
+            </div>
+
+            <ul class="transaction-list" id="transactionList" style="margin-top:15px;">
+            </ul>
+        </div>
+
+        <div class="panel">
+            <h2 class="panel-title"><i class="fas fa-hat-wizard"></i> 禁咒约束 (预算)</h2>
+            <p style="font-size:0.75em; color:var(--text-light); margin-bottom:12px;">超出预算将引发魔法反噬！</p>
+            
+            <div id="budgetList">
+            </div>
+
+            <h3 class="panel-title" style="font-size:0.9em; margin-top:20px;"><i class="fas fa-plus-circle"></i> 新增约束</h3>
+            <div class="form-group">
+                <input type="text" id="newBudgetName" placeholder="约束名称 (例：甜食摄入)">
+            </div>
+            <div class="form-group">
+                <input type="number" id="newBudgetAmount" placeholder="金币上限" step="0.01">
+            </div>
+            <button class="btn-magic" onclick="addBudget()">施加约束</button>
+        </div>
+    </div>
+</div>
+
+<script>
+/* ==========================================
+   API Key 管理（不再写死 Token）
+   ========================================== */
+const STORAGE_KEY = 'witch_api_key';
+const GIST_ID = 'c9b52465d580c277cb7e55ac9e589ed4';
+const GIST_FILE = 'witchlife.json';
+
+function getApiKey() {
+    return localStorage.getItem(STORAGE_KEY) || '';
+}
+
+function saveApiKey() {
+    const key = document.getElementById('apiKeyInput').value.trim();
+    if (!key) return alert('请输入 Token');
+    localStorage.setItem(STORAGE_KEY, key);
+    document.getElementById('apiKeyModal').classList.add('hidden');
+    loadFinanceData();
+}
+
+/* 页面加载时判断是否已输入 Key */
+document.addEventListener('DOMContentLoaded', () => {
+    if (getApiKey()) {
+        document.getElementById('apiKeyModal').classList.add('hidden');
+        loadFinanceData();
+    }
+    document.getElementById('exportBtn').addEventListener('click', exportData);
+});
+
+/* ==========================================
+   Gist 云端数据库（动态读取 Token）
+   ========================================== */
+async function gistLoad() {
+    const res = await fetch(`https://api.github.com/gists/${GIST_ID}`);
+    if (!res.ok) throw new Error();
+    const gist = await res.json();
+    if (gist.files[GIST_FILE]?.content) {
+        return JSON.parse(gist.files[GIST_FILE].content);
+    }
+    return {};
+}
+
+async function gistSave(data) {
+    const token = getApiKey();
+    if (!token) return false;
+    const res = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
+        method: 'PATCH',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            files: {
+                [GIST_FILE]: { content: JSON.stringify(data, null, 2) }
+            }
+        })
+    });
+    return res.ok;
+}
+
+async function getFinanceData() {
+    const all = await gistLoad();
+    return all.witchFinance || {};
+}
+
+async function saveFinanceData(finance) {
+    const all = await gistLoad();
+    all.witchFinance = finance;
+    return gistSave(all);
+}
+
+/* ==========================================
+   默认数据
+   ========================================== */
+const defaultFinanceData = {
+    accounts: { bank: 5000, alipay: 1200, wechat: 300 },
+    transactions: [],
+    budgets: [
+        { id: 1, name: '魔药食材', limit: 1000, spent: 0 },
+        { id: 2, name: '传送卷轴', limit: 500, spent: 0 },
+        { id: 3, name: '魔法道具', limit: 800, spent: 0 }
+    ],
+    savingsGoal: { name: '星辰扫帚', target: 5000 }
+};
+
+let financeData = structuredClone(defaultFinanceData);
+
+/* ==========================================
+   初始化加载
+   ========================================== */
+async function loadFinanceData() {
+    try {
+        const cloud = await getFinanceData();
+        if (cloud.accounts) {
+            financeData = { ...defaultFinanceData, ...cloud };
+            if (financeData.budgets) {
+                financeData.budgets = financeData.budgets.map((b, i) => ({
+                    ...b,
+                    id: b.id || Date.now() + i
+                }));
+            }
+        }
+        renderAll();
+        updateCategoryOptions();
+    } catch {
+        alert('⚠️ 读取云端数据失败，请检查 Token 是否正确');
+    }
+}
+
+/* ==========================================
+   渲染 / 业务逻辑（全部替换为 await saveFinanceData）
+   ========================================== */
+function renderAll() {
+    renderAccounts();
+    renderTransactions();
+    renderBudgets();
+    updateOverview();
+}
+
+function renderAccounts() {
+    document.getElementById('bankBalance').textContent = financeData.accounts.bank.toFixed(2);
+    document.getElementById('alipayBalance').textContent = financeData.accounts.alipay.toFixed(2);
+    document.getElementById('wechatBalance').textContent = financeData.accounts.wechat.toFixed(2);
+    document.getElementById('savingsGoalName').textContent = financeData.savingsGoal.name;
+    document.getElementById('savingsGoalTarget').textContent = financeData.savingsGoal.target.toFixed(2);
+
+    const progress = Math.min(100, Math.max(0,
+        (financeData.accounts.alipay / financeData.savingsGoal.target) * 100
+    ));
+    document.getElementById('savingsProgress').style.width = progress + '%';
+}
+
+function renderTransactions() {
+    const list = document.getElementById('transactionList');
+    list.innerHTML = '';
+    [...financeData.transactions].reverse().forEach(trans => {
+        const li = document.createElement('li');
+        li.className = 'transaction-item';
+        const icon = trans.type === 'income' ? 'fa-arrow-down' : 'fa-arrow-up';
+        const sign = trans.type === 'income' ? '+' : '-';
+        const colorClass = trans.type === 'income' ? 'income' : 'expense';
+
+        li.innerHTML = `
+            <i class="fas ${icon} trans-icon ${colorClass}"></i>
+            <div class="trans-details">
+                <div class="trans-desc">${trans.desc}</div>
+                <div class="trans-meta">${trans.category} | ${getAccountName(trans.account)}</div>
+            </div>
+            <div class="trans-amount ${colorClass}">${sign}${Number(trans.amount).toFixed(2)} 🪙</div>
+        `;
+        list.appendChild(li);
+    });
+}
+
+function renderBudgets() {
+    const list = document.getElementById('budgetList');
+    list.innerHTML = '';
+    financeData.budgets.forEach(budget => {
+        const percentage = Math.min(100, (budget.spent / budget.limit) * 100);
+        const isOver = budget.spent > budget.limit;
+        const div = document.createElement('div');
+        div.className = `budget-item ${isOver ? 'over-budget' : ''}`;
+        div.innerHTML = `
+            <div class="budget-header">
+                <span class="budget-name editable-field" onclick="makeBudgetEditable(${budget.id}, 'name')">
+                    <span>${budget.name}</span>
+                    <i class="fas fa-pencil-alt edit-icon"></i>
+                </span>
+                <span class="budget-values editable-field" onclick="makeBudgetEditable(${budget.id}, 'limit')">
+                    <span>${budget.spent.toFixed(2)} / ${budget.limit.toFixed(2)} 🪙</span>
+                    <i class="fas fa-pencil-alt edit-icon"></i>
+                </span>
+            </div>
+            <div class="progress-bar-container">
+                <div class="progress-bar" style="width: ${percentage}%"></div>
+            </div>
+            <div class="curse-warning"><i class="fas fa-skull-crossbones"></i> 警告：魔力透支！</div>
+            <button onclick="deleteBudget(${budget.id})" class="btn-small">🗑️</button>
+        `;
+        list.appendChild(div);
+    });
+}
+
+function updateOverview() {
+    const total = Object.values(financeData.accounts).reduce(
+        (a, b) => Number((a + Number(b)).toFixed(2)), 0
+    );
+    document.getElementById('totalGold').textContent = total.toFixed(2) + ' 🪙';
+
+    const now = new Date();
+    const monthly = financeData.transactions.filter(t => {
+        const d = new Date(t.date);
+        return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+    });
+
+    const income = monthly.filter(t => t.type === 'income')
+        .reduce((s, t) => Number((s + Number(t.amount)).toFixed(2)), 0);
+    const expense = monthly.filter(t => t.type === 'expense')
+        .reduce((s, t) => Number((s + Number(t.amount)).toFixed(2)), 0);
+
+    document.getElementById('monthBalance').textContent =
+        (income - expense).toFixed(2) + ' 🪙';
+
+    let luck = 100;
+    if (financeData.budgets.length > 0) {
+        const avg = financeData.budgets.reduce(
+            (sum, b) => Number((sum + Number(b.spent) / Number(b.limit)).toFixed(4)), 0
+        ) / financeData.budgets.length;
+        luck = Math.max(0, Math.min(100, 100 - (avg - 1) * 100));
+    }
+    document.getElementById('luckIndex').textContent = luck.toFixed(0) + '%';
+}
+
+function updateCategoryOptions() {
+    const categorySelect = document.getElementById('transCategory');
+    if (!categorySelect) return;
+    categorySelect.innerHTML = '';
+    const categories = financeData.budgets.map(b => b.name);
+    if (categories.length === 0) {
+        const opt = document.createElement('option');
+        opt.value = '其他';
+        opt.textContent = '其他';
+        categorySelect.appendChild(opt);
+        return;
+    }
+    categories.forEach(cat => {
+        const opt = document.createElement('option');
+        opt.value = cat;
+        opt.textContent = cat;
+        categorySelect.appendChild(opt);
+    });
+    const otherOpt = document.createElement('option');
+    otherOpt.value = '其他';
+    otherOpt.textContent = '其他';
+    categorySelect.appendChild(otherOpt);
+}
+
+/* 编辑功能 */
+function makeEditable(spanId, field) {
+    const span = document.getElementById(spanId);
+    if (!span) return;
+    const currentValue = span.textContent;
+    const input = document.createElement('input');
+
+    if (['bank', 'alipay', 'wechat', 'goalTarget'].includes(field)) {
+        input.type = 'number';
+        input.step = '0.01';
+        input.value = currentValue;
+    } else {
+        input.type = 'text';
+        input.value = currentValue;
+    }
+
+    input.style.cssText = `
+        width:100%; font-size:inherit; font-weight:inherit; color:inherit;
+        border:2px solid var(--accent-blue); border-radius:5px;
+        background:white; padding:2px 5px;
+        text-align:right; box-sizing:border-box;
+    `;
+    span.replaceWith(input);
+    input.focus();
+    input.select();
+
+    const finishEdit = async () => {
+        let newValue;
+        if (['bank', 'alipay', 'wechat', 'goalTarget'].includes(field)) {
+            newValue = Number(parseFloat(input.value || 0).toFixed(2));
+        } else {
+            newValue = input.value.trim() || '';
+        }
+
+        const newSpan = document.createElement('span');
+        newSpan.id = spanId;
+        newSpan.className = 'editable-value';
+        newSpan.textContent = newValue;
+        input.replaceWith(newSpan);
+
+        if (field === 'goalName') {
+            financeData.savingsGoal.name = newValue;
+        } else if (field === 'goalTarget') {
+            financeData.savingsGoal.target = newValue;
+        } else if (['bank','alipay','wechat'].includes(field)) {
+            financeData.accounts[field] = newValue;
+        }
+
+        await saveFinanceData(financeData);
+        renderAll();
+    };
+
+    input.addEventListener('blur', finishEdit);
+    input.addEventListener('keydown', e => {
+        if (e.key === 'Enter') input.blur();
+        if (e.key === 'Escape') {
+            input.value = currentValue;
+            input.blur();
+        }
+    });
+}
+
+function makeBudgetEditable(id, field) {
+    const budget = financeData.budgets.find(b => b.id === id);
+    if (!budget) return;
+
+    const el = event.currentTarget.querySelector('span');
+    const text = el.textContent.replace(' 🪙', '');
+    const parts = text.split(' / ');
+    const currentValue = field === 'limit' ? parts[1] : parts[0];
+
+    const input = document.createElement('input');
+    input.type = field === 'limit' ? 'number' : 'text';
+    input.step = '0.01';
+    input.value = currentValue;
+    input.style.cssText = `
+        width:${field === 'limit' ? '80px' : '100px'};
+        font-size:inherit; border:1px solid var(--accent-blue);
+        border-radius:4px; padding:2px; box-sizing:border-box;
+    `;
+    el.replaceWith(input);
+    input.focus();
+    input.select();
+
+    const finishEdit = async () => {
+        if (field === 'limit') {
+            budget.limit = Number(parseFloat(input.value || 0).toFixed(2));
+        } else {
+            budget.name = input.value.trim() || '';
+        }
+        await saveFinanceData(financeData);
+        renderBudgets();
+        updateCategoryOptions();
+    };
+
+    input.addEventListener('blur', finishEdit);
+    input.addEventListener('keydown', e => {
+        if (e.key === 'Enter') input.blur();
+        if (e.key === 'Escape') {
+            input.value = currentValue;
+            input.blur();
+        }
+    });
+}
+
+function deleteBudget(id) {
+    if (!confirm('确定要解除这项禁咒约束吗？')) return;
+    financeData.budgets = financeData.budgets.filter(b => b.id !== id);
+    saveFinanceData(financeData).then(() => {
+        renderBudgets();
+        updateCategoryOptions();
+    });
+}
+
+/* 业务操作 */
+function setTransType(type) {
+    document.getElementById('transType').value = type;
+    document.getElementById('transactionForm').style.display = 'block';
+    updateCategoryOptions();
+}
+
+async function addTransaction() {
+    const amount = Number(parseFloat(document.getElementById('transAmount').value).toFixed(2));
+    const desc = document.getElementById('transDesc').value;
+    const account = document.getElementById('transAccount').value;
+    const category = document.getElementById('transCategory').value;
+    const type = document.getElementById('transType').value;
+
+    if (!amount || !desc) {
+        alert('请填写数量和用途！');
+        return;
+    }
+
+    if (type === 'income') {
+        financeData.accounts[account] = Number(
+            (financeData.accounts[account] + amount).toFixed(2)
+        );
+    } else {
+        financeData.accounts[account] = Number(
+            (financeData.accounts[account] - amount).toFixed(2)
+        );
+        const budget = financeData.budgets.find(b => b.name === category);
+        if (budget) {
+            budget.spent = Number((budget.spent + amount).toFixed(2));
+        }
+    }
+
+    financeData.transactions.push({
+        id: Date.now(),
+        date: new Date().toISOString(),
+        type,
+        amount,
+        desc,
+        account,
+        category
+    });
+
+    await saveFinanceData(financeData);
+    renderAll();
+    document.getElementById('transAmount').value = '';
+    document.getElementById('transDesc').value = '';
+    document.getElementById('transactionForm').style.display = 'none';
+}
+
+async function transfer() {
+    const from = document.getElementById('transferFrom').value;
+    const to = document.getElementById('transferTo').value;
+    const amount = Number(parseFloat(document.getElementById('transferAmount').value).toFixed(2));
+
+    if (from === to) return alert('不能在同一金库间划转！');
+    if (amount <= 0) return alert('金币数量必须大于0！');
+    if (financeData.accounts[from] < amount) return alert('源金库金币不足！');
+
+    financeData.accounts[from] = Number((financeData.accounts[from] - amount).toFixed(2));
+    financeData.accounts[to] = Number((financeData.accounts[to] + amount).toFixed(2));
+
+    financeData.transactions.push({
+        id: Date.now(),
+        date: new Date().toISOString(),
+        type: 'transfer',
+        amount,
+        desc: `金库划转：${getAccountName(from)} → ${getAccountName(to)}`,
+        account: from,
+        category: '转账'
+    });
+
+    await saveFinanceData(financeData);
+    renderAll();
+    document.getElementById('transferAmount').value = '';
+    alert('传送术施放成功！');
+}
+
+async function addBudget() {
+    const name = document.getElementById('newBudgetName').value.trim();
+    const limit = Number(parseFloat(document.getElementById('newBudgetAmount').value).toFixed(2));
+
+    if (!name || !limit) return alert('请填写完整约束信息！');
+    if (financeData.budgets.find(b => b.name === name)) {
+        return alert('已存在同名的预算项目！');
+    }
+
+    financeData.budgets.push({
+        id: Date.now(),
+        name,
+        limit,
+        spent: 0
+    });
+
+    await saveFinanceData(financeData);
+    renderBudgets();
+    updateCategoryOptions();
+    document.getElementById('newBudgetName').value = '';
+    document.getElementById('newBudgetAmount').value = '';
+}
+
+function getAccountName(key) {
+    const names = {
+        bank: '奥术枢纽银行',
+        alipay: '云端聚宝盆',
+        wechat: '随身零钱袋'
+    };
+    return names[key] || key;
+}
+
+/* 导出数据 */
+function exportData() {
+    let content = '=== 魔法金库数据备份 ===\n';
+    content += `导出时间：${new Date().toLocaleString('zh-CN')}\n\n`;
+
+    content += '【账户余额】\n';
+    content += `奥术枢纽银行：${financeData.accounts.bank.toFixed(2)} 🪙\n`;
+    content += `云端聚宝盆：${financeData.accounts.alipay.toFixed(2)} 🪙\n`;
+    content += `随身零钱袋：${financeData.accounts.wechat.toFixed(2)} 🪙\n`;
+    content += `总储量：${
+        (financeData.accounts.bank + financeData.accounts.alipay + financeData.accounts.wechat).toFixed(2)
+    } 🪙\n\n`;
+
+    content += '【储蓄目标】\n';
+    content += `目标名称：${financeData.savingsGoal.name}\n`;
+    content += `目标金额：${financeData.savingsGoal.target.toFixed(2)} 🪙\n`;
+    content += `当前进度：${(
+        (financeData.accounts.alipay / financeData.savingsGoal.target) * 100
+    ).toFixed(1)}%\n\n`;
+
+    content += '【禁咒约束（预算）】\n';
+    financeData.budgets.forEach(b => {
+        const p = ((b.spent / b.limit) * 100).toFixed(1);
+        const warn = b.spent > b.limit ? '【超支】' : '';
+        content += `${b.name}：${b.spent.toFixed(2)} / ${b.limit.toFixed(2)} 🪙 (${p}%)${warn}\n`;
+    });
+    content += '\n';
+
+    content += '【魔力流转记录】\n';
+    if (financeData.transactions.length === 0) {
+        content += '暂无记录\n';
+    } else {
+        [...financeData.transactions]
+            .sort((a, b) => new Date(b.date) - new Date(a.date))
+            .forEach(t => {
+                const d = new Date(t.date).toLocaleString('zh-CN');
+                const sym = t.type === 'income' ? '+' : '-';
+                const txt = t.type === 'income' ? '收入' :
+                            t.type === 'expense' ? '支出' : '转账';
+                content += `[${d}] ${txt} ${sym}${Number(t.amount).toFixed(2)} 🪙\n`;
+                content += `  描述：${t.desc}\n`;
+                content += `  账户：${getAccountName(t.account)}\n`;
+                content += `  分类：${t.category}\n\n`;
+            });
+    }
+
+    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `魔法金库备份_${new Date().toISOString().slice(0,10)}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    alert('数据导出成功！');
+}
+</script>
+
+</body>
+</html>
