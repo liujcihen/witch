@@ -1,0 +1,2111 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>古堡藏书 - 见习女巫</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-blue: #e6f2ff;
+            --secondary-blue: #cce7ff;
+            --accent-blue: #a3d5ff;
+            --soft-blue: #b8daff;
+            --pale-blue: #f0f8ff;
+            
+            --text-dark: #4a5568;
+            --text-light: #718096;
+            --text-lighter: #a0aec0;
+            
+            --card-bg: rgba(255, 255, 255, 0.65);
+            --card-border: rgba(255, 255, 255, 0.4);
+            --shadow-sm: 0 2px 8px rgba(174, 200, 236, 0.1);
+            --shadow-md: 0 4px 12px rgba(174, 200, 236, 0.15);
+            --radius-sm: 8px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+            
+            --border-light: 1px solid rgba(226, 232, 240, 0.3);
+        }
+
+        * { 
+            box-sizing: border-box; 
+            font-family: 'Noto Sans SC', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif; 
+            margin: 0; 
+            padding: 0;
+            font-size: 14px;
+        }
+
+        body {
+            background-color: var(--primary-blue);
+            min-height: 100vh;
+            padding: 20px;
+            color: var(--text-dark);
+            overflow-x: hidden;
+            position: relative;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px; 
+            margin: auto; 
+            position: relative; 
+            z-index: 1;
+        }
+
+        .header {
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            margin-bottom: 24px; 
+            padding: 18px 0 12px 0;
+            background: transparent;
+            backdrop-filter: none;
+            border-radius: 0;
+            box-shadow: none;
+            border: none;
+            position: relative;
+        }
+        
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: var(--accent-blue);
+            border-radius: 2px;
+        }
+        
+        .header h1 { 
+            color: var(--text-dark); 
+            margin: 0; 
+            font-weight: 300;
+            letter-spacing: 2px;
+            font-family: 'Noto Serif SC', serif;
+            font-size: 1.8em;
+        }
+        
+        .header h1 i { 
+            margin-right: 10px; 
+            color: var(--accent-blue);
+        }
+        
+        .back-link { 
+            color: var(--text-light); 
+            text-decoration: none; 
+            font-weight: 500;
+            font-size: 1em;
+            transition: color 0.2s;
+        }
+        
+        .back-link:hover { 
+            color: var(--accent-blue);
+        }
+
+        .action-bar {
+            display: flex; 
+            gap: 12px; 
+            margin-bottom: 20px; 
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .btn-action {
+            padding: 11px 20px;
+            border: none; 
+            border-radius: 10px;
+            cursor: pointer; 
+            font-size: 1em;
+            font-weight: 500;
+            display: flex; 
+            align-items: center; 
+            gap: 8px;
+            transition: all 0.3s;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-blue), var(--soft-blue));
+            color: white; 
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .btn-primary:hover { 
+            transform: translateY(-2px); 
+            box-shadow: var(--shadow-md);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.8); 
+            color: var(--text-dark);
+            border: var(--border-light);
+        }
+        
+        .btn-secondary:hover { 
+            background: white; 
+            transform: translateY(-2px); 
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #7eb8da, #a1c4fd);
+            color: white; 
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .btn-success:hover { 
+            transform: translateY(-2px); 
+            box-shadow: var(--shadow-md);
+        }
+
+        .search-box {
+            margin-left: auto;
+            position: relative;
+        }
+
+        .search-box input {
+            padding: 11px 16px 11px 40px;
+            border-radius: 10px;
+            border: var(--border-light);
+            background: rgba(255, 255, 255, 0.9);
+            font-size: 1em;
+            width: 220px;
+            color: var(--text-dark);
+            transition: all 0.3s;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(163, 213, 255, 0.2);
+            width: 260px;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-lighter);
+            font-size: 0.95em;
+        }
+
+        .main-content {
+            display: grid; 
+            grid-template-columns: 1fr 320px; 
+            gap: 20px;
+        }
+        
+        @media (max-width: 1100px) {
+            .main-content { 
+                grid-template-columns: 1fr; 
+            }
+        }
+
+        .books-section {
+            background: var(--card-bg); 
+            backdrop-filter: blur(8px);
+            border-radius: var(--radius-md); 
+            padding: 20px;
+            box-shadow: var(--shadow-sm);
+            border: var(--border-light);
+            border-left: none;
+            transition: all 0.3s ease;
+        }
+        
+        .books-section:hover {
+            box-shadow: var(--shadow-md);
+        }
+        
+        .section-title {
+            color: var(--text-dark); 
+            margin: 0 0 18px 0;
+            display: flex; 
+            align-items: center; 
+            gap: 10px;
+            font-size: 1.2em;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        
+        .section-title i {
+            color: var(--accent-blue);
+        }
+        
+        .books-grid {
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+            gap: 15px;
+        }
+
+        .book-card {
+            background: white; 
+            border-radius: var(--radius-md); 
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            cursor: pointer;
+            border-top: 3px solid var(--text-lighter);
+            display: flex; 
+            flex-direction: column; 
+            height: 100%;
+            position: relative;
+        }
+        
+        .book-card:hover { 
+            transform: translateY(-5px); 
+            box-shadow: var(--shadow-md); 
+        }
+        
+        .book-card.status-reading { 
+            border-top-color: #ffcb6b; 
+        }
+        
+        .book-card.status-read { 
+            border-top-color: #7eb8da; 
+        }
+        
+        .book-card.status-unread { 
+            border-top-color: #a0aec0; 
+        }
+
+        .book-cover-container {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 3 / 4;
+            max-height: 220px;
+            overflow: hidden;
+            background: linear-gradient(135deg, var(--pale-blue), var(--soft-blue));
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+        }
+        
+        .book-cover-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .book-card:hover .book-cover-img {
+            transform: scale(1.05);
+        }
+        
+        .book-cover-placeholder {
+            font-size: 2.2em;
+            color: rgba(255, 255, 255, 0.7);
+            text-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .book-status-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            padding: 4px 10px;
+            border-radius: 10px;
+            font-size: 0.75em;
+            font-weight: 600;
+            color: white;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            z-index: 2;
+        }
+        
+        .status-badge-reading { 
+            background: rgba(255, 203, 107, 0.85); 
+        }
+        
+        .status-badge-read { 
+            background: rgba(126, 184, 218, 0.85); 
+        }
+        
+        .status-badge-unread { 
+            background: rgba(160, 174, 192, 0.85); 
+        }
+
+        .book-info {
+            padding: 12px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            background: white;
+        }
+        
+        .book-title {
+            font-size: 1em;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 6px;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            min-height: 2.8em;
+        }
+        
+        .book-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+        
+        .book-author, .book-country, .book-year, .book-type {
+            font-size: 0.85em;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .book-author i, .book-country i, .book-year i, .book-type i {
+            font-size: 0.9em;
+            opacity: 0.7;
+            width: 14px;
+        }
+
+        .book-rating {
+            display: flex; 
+            align-items: center; 
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .stars-display { 
+            color: #ffc107; 
+            font-size: 0.9em;
+            letter-spacing: 1px;
+        }
+        
+        .rating-value { 
+            font-size: 0.8em;
+            color: var(--text-light);
+            background: #f5f5f5;
+            padding: 3px 8px;
+            border-radius: 8px;
+        }
+
+        .book-progress {
+            margin-top: auto;
+            padding-top: 10px;
+            border-top: var(--border-light);
+        }
+        
+        .progress-text {
+            font-size: 0.8em;
+            color: var(--text-light); 
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .progress-bar-container {
+            height: 5px;
+            background: #f0f0f0; 
+            border-radius: 3px; 
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%; 
+            background: linear-gradient(90deg, var(--accent-blue), var(--soft-blue));
+            border-radius: 3px; 
+            transition: width 0.8s ease;
+        }
+
+        .book-actions {
+            display: flex; 
+            gap: 8px;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: var(--border-light);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .book-card:hover .book-actions {
+            opacity: 1;
+        }
+        
+        .book-btn {
+            flex: 1; 
+            padding: 8px 6px;
+            border: none; 
+            border-radius: 6px;
+            cursor: pointer; 
+            font-size: 0.8em;
+            transition: all 0.2s;
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 4px;
+            font-weight: 600;
+        }
+        
+        .book-btn-edit { 
+            background: rgba(163, 213, 255, 0.2); 
+            color: var(--accent-blue); 
+        }
+        
+        .book-btn-delete { 
+            background: rgba(255, 154, 158, 0.2); 
+            color: #ff9a9e; 
+        }
+        
+        .book-btn:hover { 
+            transform: scale(1.05); 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .sidebar {
+            display: flex; 
+            flex-direction: column; 
+            gap: 20px;
+        }
+        
+        .sidebar-card {
+            background: var(--card-bg); 
+            backdrop-filter: blur(8px);
+            border-radius: var(--radius-md); 
+            padding: 20px;
+            box-shadow: var(--shadow-sm);
+            border: var(--border-light);
+            border-left: none;
+            transition: all 0.3s ease;
+        }
+        
+        .sidebar-card:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .stats-grid {
+            display: grid; 
+            grid-template-columns: repeat(2, 1fr); 
+            gap: 15px;
+        }
+        
+        .stat-item {
+            text-align: center; 
+            padding: 18px;
+            background: rgba(255,255,255,0.6);
+            border-radius: var(--radius-sm);
+            border: var(--border-light);
+        }
+        
+        .stat-number {
+            font-size: 1.8em;
+            font-weight: 600; 
+            color: var(--accent-blue);
+            margin-bottom: 6px;
+        }
+        
+        .stat-label { 
+            font-size: 0.85em;
+            color: var(--text-light); 
+            margin-top: 6px;
+            font-weight: 500;
+        }
+
+        .reading-list {
+            max-height: 300px; 
+            overflow-y: auto;
+        }
+        
+        .reading-item {
+            padding: 14px;
+            background: rgba(255,255,255,0.6); 
+            border-radius: var(--radius-sm);
+            margin-bottom: 12px;
+            border-left: 3px solid #ffcb6b;
+            border: var(--border-light);
+        }
+        
+        .reading-item-title {
+            font-weight: 600; 
+            color: var(--text-dark); 
+            margin-bottom: 6px;
+            font-size: 1em;
+        }
+        
+        .reading-item-meta {
+            font-size: 0.85em;
+            color: var(--text-light);
+        }
+
+        .modal {
+            display: none; 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%;
+            background: rgba(0,0,0,0.3); 
+            z-index: 1000; 
+            backdrop-filter: blur(5px);
+            align-items: center; 
+            justify-content: center; 
+            padding: 20px;
+        }
+        
+        .modal.active { 
+            display: flex; 
+        }
+        
+        .modal-content {
+            background: white; 
+            border-radius: var(--radius-md); 
+            padding: 22px;
+            width: 100%;
+            max-width: 650px; 
+            box-shadow: var(--shadow-md); 
+            max-height: 85vh; 
+            overflow-y: auto;
+        }
+        
+        .modal-large { 
+            max-width: 850px; 
+        }
+        
+        .modal-header {
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .modal-title { 
+            color: var(--text-dark); 
+            margin: 0; 
+            font-size: 1.2em;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .modal-title i {
+            color: var(--accent-blue);
+        }
+        
+        .btn-close {
+            background: none; 
+            border: none; 
+            font-size: 1.4em;
+            cursor: pointer;
+            color: var(--text-lighter); 
+            padding: 5px; 
+            line-height: 1;
+            transition: color 0.2s;
+        }
+        
+        .btn-close:hover { 
+            color: #ff9a9e; 
+        }
+
+        .form-grid {
+            display: grid; 
+            grid-template-columns: repeat(2, 1fr); 
+            gap: 18px;
+        }
+        
+        .form-full { 
+            grid-column: 1 / -1; 
+        }
+        
+        .form-group { 
+            margin-bottom: 18px;
+        }
+        
+        .form-group label {
+            display: block; 
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-light); 
+            font-size: 0.95em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .form-group input, 
+        .form-group select, 
+        .form-group textarea {
+            width: 100%; 
+            padding: 12px 14px;
+            border: var(--border-light);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.8); 
+            font-size: 1em;
+            color: var(--text-dark);
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+        
+        .form-group input:focus, 
+        .form-group select:focus, 
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(163, 213, 255, 0.2);
+        }
+        
+        .form-group textarea { 
+            resize: vertical; 
+            min-height: 80px; 
+        }
+
+        .cover-upload {
+            display: flex; 
+            gap: 18px;
+            align-items: flex-start;
+        }
+        
+        .cover-preview {
+            width: 120px; 
+            height: 160px; 
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--pale-blue), var(--soft-blue));
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            color: var(--text-light); 
+            font-size: 2.2em;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .cover-preview img {
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover;
+        }
+        
+        .cover-inputs { 
+            flex: 1; 
+        }
+        
+        .cover-url-input { 
+            margin-bottom: 12px;
+        }
+        
+        .cover-file-input { 
+            margin-bottom: 12px;
+        }
+
+        .modal-footer {
+            display: flex; 
+            gap: 15px; 
+            margin-top: 25px;
+        }
+        
+        .btn-cancel, 
+        .btn-submit {
+            flex: 1; 
+            padding: 14px;
+            border: none; 
+            border-radius: 10px;
+            cursor: pointer; 
+            font-size: 1em;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .btn-cancel {
+            background: #f0f4f8; 
+            color: var(--text-dark);
+        }
+        
+        .btn-cancel:hover { 
+            background: #e2e8f0; 
+        }
+        
+        .btn-submit {
+            background: linear-gradient(135deg, var(--accent-blue), var(--soft-blue));
+            color: white;
+        }
+        
+        .btn-submit:hover { 
+            transform: translateY(-2px); 
+            box-shadow: var(--shadow-md);
+        }
+
+        .reading-records {
+            max-height: 350px; 
+            overflow-y: auto; 
+            margin-top: 18px;
+        }
+        
+        .record-item {
+            background: rgba(255,255,255,0.6); 
+            border-radius: var(--radius-sm);
+            padding: 18px;
+            margin-bottom: 12px;
+            border-left: 3px solid var(--accent-blue);
+            border: var(--border-light);
+        }
+        
+        .record-header {
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .record-date {
+            font-weight: 600; 
+            color: var(--accent-blue); 
+            font-size: 1em;
+        }
+        
+        .record-time {
+            font-size: 0.85em;
+            color: var(--text-light);
+        }
+        
+        .record-details {
+            font-size: 0.95em;
+            color: var(--text-dark); 
+            line-height: 1.6;
+        }
+        
+        .record-quote {
+            background: rgba(255, 203, 107, 0.1); 
+            border-left: 3px solid #ffcb6b;
+            padding: 12px;
+            margin: 12px 0;
+            font-style: italic; 
+            color: #856404;
+        }
+        
+        .record-feeling {
+            background: rgba(126, 184, 218, 0.1); 
+            border-left: 3px solid #7eb8da;
+            padding: 12px;
+            margin: 12px 0;
+            color: #155724;
+        }
+
+        .import-area {
+            background: #f8f9fa; 
+            border: 2px dashed #dee2e6; 
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 18px;
+        }
+        
+        .import-textarea {
+            width: 100%; 
+            min-height: 200px;
+            border: none; 
+            background: transparent;
+            font-family: monospace; 
+            font-size: 0.95em;
+            resize: vertical;
+            padding: 12px;
+            color: var(--text-dark);
+        }
+        
+        .import-textarea:focus { 
+            outline: none; 
+        }
+        
+        .import-help {
+            font-size: 0.9em;
+            color: var(--text-light); 
+            margin-top: 18px;
+            background: white; 
+            padding: 18px;
+            border-radius: 8px;
+        }
+        
+        .import-help code {
+            background: #f0f0f0; 
+            padding: 3px 8px;
+            border-radius: 4px; 
+            font-family: monospace;
+        }
+
+        .empty-state {
+            text-align: center; 
+            padding: 50px 20px;
+            color: var(--text-light);
+        }
+        
+        .empty-state i { 
+            font-size: 3em;
+            margin-bottom: 15px;
+            opacity: 0.5; 
+        }
+        
+        .empty-state p { 
+            font-size: 1em;
+            line-height: 1.6;
+        }
+
+        .rating-input {
+            display: flex; 
+            gap: 6px;
+            font-size: 1.4em; 
+            color: #ddd; 
+            cursor: pointer;
+        }
+        
+        .rating-input i { 
+            transition: color 0.2s; 
+        }
+        
+        .rating-input i.active { 
+            color: #ffc107; 
+        }
+        
+        .rating-input i:hover { 
+            color: #ffc107; 
+        }
+
+        .tabs {
+            display: flex; 
+            gap: 12px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .tab {
+            padding: 10px 18px;
+            border: none; 
+            background: none; 
+            cursor: pointer;
+            font-weight: 600; 
+            color: var(--text-light); 
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+            font-size: 1em;
+        }
+        
+        .tab:hover { 
+            color: var(--accent-blue); 
+        }
+        
+        .tab.active { 
+            color: var(--accent-blue); 
+            border-bottom-color: var(--accent-blue); 
+        }
+
+        ::-webkit-scrollbar { 
+            width: 6px; 
+        }
+        
+        ::-webkit-scrollbar-track { 
+            background: transparent; 
+        }
+        
+        ::-webkit-scrollbar-thumb { 
+            background: var(--accent-blue); 
+            border-radius: 3px; 
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--soft-blue);
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 12px;
+                text-align: center;
+            }
+            
+            .header::after {
+                width: 60px;
+            }
+            
+            .action-bar {
+                justify-content: center;
+            }
+
+            .search-box {
+                margin-left: 0;
+                width: 100%;
+            }
+
+            .search-box input {
+                width: 100%;
+            }
+
+            .search-box input:focus {
+                width: 100%;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .cover-upload {
+                flex-direction: column;
+            }
+            
+            .books-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+        }
+
+        /* ===== API Key 弹窗样式 ===== */
+        #apiKeyModal {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.45);
+            z-index: 99999;
+            display: flex; align-items: center; justify-content: center;
+        }
+        #apiKeyModal.hidden { display: none; }
+        .api-key-box {
+            background: white;
+            padding: 28px 24px;
+            border-radius: var(--radius-md);
+            width: 360px;
+            text-align: center;
+            box-shadow: var(--shadow-md);
+        }
+        .api-key-box h3 {
+            margin-bottom: 14px;
+            color: var(--text-dark);
+            font-size: 1.1em;
+        }
+        .api-key-box input {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 0.95em;
+            margin-bottom: 12px;
+        }
+        .api-key-box button {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--accent-blue), var(--soft-blue));
+            color: white;
+            font-size: 1em;
+            cursor: pointer;
+        }
+        .api-key-tip {
+            font-size: 0.75em;
+            color: var(--text-light);
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- ===== API Key 弹窗 ===== -->
+<div id="apiKeyModal">
+    <div class="api-key-box">
+        <h3>🔑 请输入 GitHub Token</h3>
+        <input id="apiKeyInput" type="password" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+        <button onclick="saveApiKey()">保存并进入</button>
+        <div class="api-key-tip">
+            只需输入一次，Token 仅保存在本浏览器<br>
+            权限仅需勾选 <strong>gist</strong>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Header -->
+    <div class="header">
+        <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> 返回观测台</a>
+        <h1><i class="fas fa-book-dead"></i> 古堡藏书</h1>
+        <div></div>
+    </div>
+
+    <!-- 操作栏 -->
+    <div class="action-bar">
+        <button class="btn-action btn-primary" onclick="openBookModal()">
+            <i class="fas fa-plus"></i> 添加新书
+        </button>
+        <button class="btn-action btn-secondary" onclick="openImportModal()">
+            <i class="fas fa-file-import"></i> 批量导入
+        </button>
+        <button class="btn-action btn-success" onclick="openStatsModal()">
+            <i class="fas fa-chart-bar"></i> 阅读统计
+        </button>
+
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="搜索书名 / 作者..." oninput="renderBooks()">
+        </div>
+    </div>
+
+    <!-- 主要内容区 -->
+    <div class="main-content">
+        <div class="books-section">
+            <h2 class="section-title"><i class="fas fa-books"></i> 魔法书库</h2>
+            <div class="books-grid" id="booksGrid"></div>
+        </div>
+
+        <div class="sidebar">
+            <div class="sidebar-card">
+                <h3 class="section-title"><i class="fas fa-chart-pie"></i> 阅读概览</h3>
+                <div class="stats-grid" id="statsGrid"></div>
+            </div>
+
+            <div class="sidebar-card">
+                <h3 class="section-title"><i class="fas fa-glasses"></i> 正在研读</h3>
+                <div class="reading-list" id="readingList"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 添加/编辑书籍模态框 -->
+<div class="modal" id="bookModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title" id="bookModalTitle">
+                <i class="fas fa-plus-circle"></i> 添加新书
+            </h3>
+            <button class="btn-close" onclick="closeBookModal()">&times;</button>
+        </div>
+        <form id="bookForm" onsubmit="saveBook(event)">
+            <div class="cover-upload">
+                <div class="cover-preview" id="coverPreview">
+                    <i class="fas fa-book"></i>
+                </div>
+                <div class="cover-inputs">
+                    <div class="form-group cover-url-input">
+                        <label><i class="fas fa-link"></i> 封面图片URL</label>
+                        <input type="url" id="bookCoverUrl" placeholder="https://example.com/cover.jpg" onchange="previewCoverFromUrl()">
+                    </div>
+                    <div class="form-group cover-file-input">
+                        <label><i class="fas fa-upload"></i> 或上传本地图片</label>
+                        <input type="file" id="bookCoverFile" accept="image/*" onchange="previewCoverFromFile(event)">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-grid">
+                <div class="form-group form-full">
+                    <label><i class="fas fa-bookmark"></i> 书名 *</label>
+                    <input type="text" id="bookTitle" required placeholder="例如：哈利·波特与魔法石">
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-globe-americas"></i> 国家/地区</label>
+                    <input type="text" id="bookCountry" placeholder="例如：英国">
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-user-edit"></i> 作者 *</label>
+                    <input type="text" id="bookAuthor" required placeholder="例如：J.K.罗琳">
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-calendar-alt"></i> 出版年份</label>
+                    <input type="number" id="bookYear" placeholder="例如：1997" min="1000" max="2099">
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-layer-group"></i> 类型</label>
+                    <select id="bookType">
+                        <option value="">选择类型</option>
+                        <option value="小说">小说</option>
+                        <option value="奇幻">奇幻</option>
+                        <option value="科幻">科幻</option>
+                        <option value="悬疑">悬疑</option>
+                        <option value="传记">传记</option>
+                        <option value="历史">历史</option>
+                        <option value="哲学">哲学</option>
+                        <option value="心理学">心理学</option>
+                        <option value="经济学">经济学</option>
+                        <option value="科普">科普</option>
+                        <option value="诗歌">诗歌</option>
+                        <option value="散文">散文</option>
+                        <option value="漫画">漫画</option>
+                        <option value="其他">其他</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-star"></i> 豆瓣评分</label>
+                    <input type="number" id="bookDoubanRating" placeholder="例如：9.5" min="0" max="10" step="0.1">
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-heart"></i> 个人评分</label>
+                    <div class="rating-input" id="personalRating">
+                        <i class="far fa-star" data-value="1"></i>
+                        <i class="far fa-star" data-value="2"></i>
+                        <i class="far fa-star" data-value="3"></i>
+                        <i class="far fa-star" data-value="4"></i>
+                        <i class="far fa-star" data-value="5"></i>
+                    </div>
+                    <input type="hidden" id="bookPersonalRating" value="0">
+                </div>
+                <div class="form-group form-full">
+                    <label><i class="fas fa-align-left"></i> 简介</label>
+                    <textarea id="bookDescription" placeholder="书籍内容简介..."></textarea>
+                </div>
+                <div class="form-group form-full">
+                    <label><i class="fas fa-flag"></i> 阅读状态</label>
+                    <select id="bookStatus">
+                        <option value="unread">📚 未读</option>
+                        <option value="reading">📖 在读</option>
+                        <option value="read">✅ 已读</option>
+                    </select>
+                </div>
+            </div>
+            <input type="hidden" id="bookId">
+            <input type="hidden" id="bookCoverData">
+            <div class="modal-footer">
+                <button type="button" class="btn-cancel" onclick="closeBookModal()">取消</button>
+                <button type="submit" class="btn-submit">保存书籍</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- 阅读记录模态框 -->
+<div class="modal" id="readingModal">
+    <div class="modal-content modal-large">
+        <div class="modal-header">
+            <h3 class="modal-title" id="readingModalTitle">
+                <i class="fas fa-book-reader"></i> 阅读记录
+            </h3>
+            <button class="btn-close" onclick="closeReadingModal()">&times;</button>
+        </div>        
+        <div class="tabs">
+            <button class="tab active" onclick="switchReadingTab('records')">阅读记录</button>
+            <button class="tab" onclick="switchReadingTab('add')">添加记录</button>
+        </div>
+
+        <div id="recordsTab">
+            <div class="reading-records" id="readingRecordsList"></div>
+        </div>
+
+        <div id="addTab" style="display: none;">
+            <form id="readingForm" onsubmit="saveReadingRecord(event)">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label><i class="fas fa-calendar-day"></i> 阅读日期 *</label>
+                        <input type="date" id="recordDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-clock"></i> 阅读时长(分钟) *</label>
+                        <input type="number" id="recordDuration" required min="1" placeholder="例如：30">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-percentage"></i> 当前进度(%)</label>
+                        <input type="number" id="recordProgress" min="0" max="100" placeholder="例如：50">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-bookmark"></i> 读到页码</label>
+                        <input type="number" id="recordPage" min="1" placeholder="例如：120">
+                    </div>
+                    <div class="form-group form-full">
+                        <label><i class="fas fa-lightbulb"></i> 金句摘抄</label>
+                        <textarea id="recordQuote" placeholder="记录打动你的句子..."></textarea>
+                    </div>
+                    <div class="form-group form-full">
+                        <label><i class="fas fa-heart"></i> 阅读感悟</label>
+                        <textarea id="recordFeeling" placeholder="写下你的思考与感受..."></textarea>
+                    </div>
+                </div>
+                <input type="hidden" id="recordBookId">
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" onclick="closeReadingModal()">取消</button>
+                    <button type="submit" class="btn-submit">保存记录</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- 批量导入模态框 -->
+<div class="modal" id="importModal">
+    <div class="modal-content modal-large">
+        <div class="modal-header">
+            <h3 class="modal-title">
+                <i class="fas fa-file-import"></i> 批量导入书籍
+            </h3>
+            <button class="btn-close" onclick="closeImportModal()">&times;</button>
+        </div>        
+        <div class="import-area">
+            <textarea class="import-textarea" id="importText" placeholder="在此粘贴书籍数据，每行一本，格式如下：
+书名|作者|国家|年份|类型|简介|豆瓣评分
+哈利·波特与魔法石|J.K.罗琳|英国|1997|奇幻|一个关于魔法世界的冒险故事|9.5
+百年孤独|加西亚·马尔克斯|哥伦比亚|1967|小说|魔幻现实主义代表作|9.6"></textarea>
+        </div>        
+        <div class="import-help">
+            <p><strong>📋 导入格式说明：</strong></p>
+            <p>每行一本书，使用竖线 <code>|</code> 分隔各字段，顺序为：</p>
+            <p><code>书名|作者|国家|年份|类型|简介|豆瓣评分</code></p>
+            <p>• 书名和作者为必填项，其他可选</p>
+            <p>• 年份填写4位数字，豆瓣评分填写0-10的数字</p>
+            <p>• 导入后会自动生成唯一ID，不会覆盖已有书籍</p>
+        </div>        
+        <div class="modal-footer">
+            <button type="button" class="btn-cancel" onclick="closeImportModal()">取消</button>
+            <button type="button" class="btn-submit" onclick="importBooks()">开始导入</button>
+        </div>
+    </div>
+</div>
+
+<!-- 统计模态框 -->
+<div class="modal" id="statsModal">
+    <div class="modal-content modal-large">
+        <div class="modal-header">
+            <h3 class="modal-title">
+                <i class="fas fa-chart-bar"></i> 阅读统计报告
+            </h3>
+            <button class="btn-close" onclick="closeStatsModal()">&times;</button>
+        </div>        
+        <div id="statsContent"></div>        
+        <div class="modal-footer">
+            <button type="button" class="btn-cancel" onclick="closeStatsModal()">关闭</button>
+            <button type="button" class="btn-submit" onclick="exportStats()">
+                <i class="fas fa-download"></i> 导出报告
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+/* ==========================================
+   API Key 管理（不再写死 Token）
+   ========================================== */
+const STORAGE_KEY = 'witch_api_key';
+const GIST_ID = 'c9b52465d580c277cb7e55ac9e589ed4';
+const GIST_FILE = 'witchlife.json';
+
+function getApiKey() {
+    return localStorage.getItem(STORAGE_KEY) || '';
+}
+
+function saveApiKey() {
+    const key = document.getElementById('apiKeyInput').value.trim();
+    if (!key) return alert('请输入 Token');
+    localStorage.setItem(STORAGE_KEY, key);
+    document.getElementById('apiKeyModal').classList.add('hidden');
+    loadBooksData();
+}
+
+/* 页面加载时判断是否已输入 Key */
+document.addEventListener('DOMContentLoaded', () => {
+    if (getApiKey()) {
+        document.getElementById('apiKeyModal').classList.add('hidden');
+        loadBooksData();
+    }
+});
+
+/* ==========================================
+   Gist 云端数据库（动态读取 Token）
+   ========================================== */
+async function gistLoad() {
+    const res = await fetch(`https://api.github.com/gists/${GIST_ID}`);
+    if (!res.ok) throw new Error();
+    const gist = await res.json();
+    if (gist.files[GIST_FILE]?.content) {
+        return JSON.parse(gist.files[GIST_FILE].content);
+    }
+    return {};
+}
+
+async function gistSave(data) {
+    const token = getApiKey();
+    if (!token) return false;
+    const res = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
+        method: 'PATCH',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            files: {
+                [GIST_FILE]: { content: JSON.stringify(data, null, 2) }
+            }
+        })
+    });
+    return res.ok;
+}
+
+async function getBooksData() {
+    const all = await gistLoad();
+    return all.witchBooksDB || [];
+}
+
+async function saveBooksData(books) {
+    const all = await gistLoad();
+    all.witchBooksDB = books;
+    return gistSave(all);
+}
+
+/* ==========================================
+   默认数据（首次使用时）
+   ========================================== */
+let booksDB = [];
+
+/* ==========================================
+   初始化加载
+   ========================================== */
+async function loadBooksData() {
+    try {
+        booksDB = await getBooksData();
+        await updateAllViews();
+    } catch {
+        alert('⚠️ 读取云端数据失败，请检查 Token 是否正确');
+    }
+}
+
+/* ==========================================
+   工具函数
+   ========================================== */
+function generateId() {
+    return Date.now().toString(36) + Math.random().toString(36).substr(2);
+}
+
+function formatDate(dateString) {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return `${date.getFullYear()}年${date.getMonth()+1}月${date.getDate()}日`;
+}
+
+function getStatusInfo(status) {
+    const statusMap = {
+        'unread': { text: '未读', class: 'status-unread', icon: '📚' },
+        'reading': { text: '在读', class: 'status-reading', icon: '📖' },
+        'read': { text: '已读', class: 'status-read', icon: '✅' }
+    };
+    return statusMap[status] || statusMap['unread'];
+}
+
+function renderStars(rating) {
+    const fullStars = Math.floor(rating);
+    const hasHalfStar = rating % 1 >= 0.5;
+    let stars = '';
+    for (let i = 1; i <= 5; i++) {
+        if (i <= fullStars) {
+            stars += '<i class="fas fa-star"></i>';
+        } else if (i === fullStars + 1 && hasHalfStar) {
+            stars += '<i class="fas fa-star-half-alt"></i>';
+        } else {
+            stars += '<i class="far fa-star"></i>';
+        }
+    }
+    return stars;
+}
+
+/* ==========================================
+   渲染逻辑
+   ========================================== */
+async function renderBooks() {
+    const db = booksDB;
+    const grid = document.getElementById('booksGrid');
+    const keyword = document.getElementById('searchInput').value.trim().toLowerCase();
+
+    let filteredBooks = db;
+    if (keyword) {
+        filteredBooks = db.filter(book =>
+            book.title.toLowerCase().includes(keyword) ||
+            book.author.toLowerCase().includes(keyword)
+        );
+    }
+
+    if (filteredBooks.length === 0) {
+        grid.innerHTML = `
+            <div class="empty-state" style="grid-column: 1 / -1;">
+                <i class="fas fa-book-dead"></i>
+                <p>${keyword ? '没有找到匹配的书籍~' : '古堡藏书空空如也~'}<br>点击"添加新书"开始建立你的魔法图书馆吧！</p>
+            </div>
+        `;
+        return;
+    }
+
+    const sortedBooks = [...filteredBooks].sort((a, b) => {
+        const statusOrder = { 'reading': 0, 'unread': 1, 'read': 2 };
+        return (statusOrder[a.status] || 0) - (statusOrder[b.status] || 0);
+    });    
+    grid.innerHTML = sortedBooks.map(book => {
+        const statusInfo = getStatusInfo(book.status);
+        const latestRecord = book.records && book.records.length > 0 
+            ? [...book.records].sort((a, b) => new Date(b.date) - new Date(a.date))[0]
+            : null;
+        
+        return `
+            <div class="book-card status-${book.status}" onclick="openReadingModal('${book.id}')">
+                <div class="book-cover-container">
+                    ${book.coverData 
+                        ? `<img src="${book.coverData}" class="book-cover-img" alt="${book.title}">` 
+                        : `<div class="book-cover-placeholder"><i class="fas fa-book"></i></div>`}
+                    <div class="book-status-badge status-badge-${book.status}">
+                        ${statusInfo.icon} ${statusInfo.text}
+                    </div>
+                </div>
+                <div class="book-info">
+                    <div class="book-title">${book.title}</div>
+                    <div class="book-meta">
+                        <div class="book-author">
+                            <i class="fas fa-user-edit"></i> ${book.author}
+                        </div>
+                        ${book.country ? `
+                        <div class="book-country">
+                            <i class="fas fa-globe-americas"></i> ${book.country}
+                        </div>` : ''}
+                        ${book.year ? `
+                        <div class="book-year">
+                            <i class="fas fa-calendar-alt"></i> ${book.year}年
+                        </div>` : ''}
+                        ${book.type ? `
+                        <div class="book-type">
+                            <i class="fas fa-layer-group"></i> ${book.type}
+                        </div>` : ''}
+                    </div>
+                    ${(book.doubanRating || book.personalRating) ? `
+                    <div class="book-rating">
+                        <div class="stars-display">
+                            ${renderStars(book.personalRating || book.doubanRating || 0)}
+                        </div>
+                        <span class="rating-value">
+                            ${book.personalRating ? `我的:${book.personalRating}分` : `豆瓣:${book.doubanRating}分`}
+                        </span>
+                    </div>` : ''}
+                    ${latestRecord ? `
+                    <div class="book-progress">
+                        <div class="progress-text">
+                            <span>阅读进度</span>
+                            <span>${latestRecord.progress ? latestRecord.progress + '%' : '第' + latestRecord.page + '页'}</span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" style="width: ${latestRecord.progress || 0}%"></div>
+                        </div>
+                    </div>` : ''}
+                    <div class="book-actions" onclick="event.stopPropagation()">
+                        <button class="book-btn book-btn-edit" onclick="openBookModal('${book.id}')" title="编辑">
+                            <i class="fas fa-edit"></i> 编辑
+                        </button>
+                        <button class="book-btn book-btn-delete" onclick="deleteBook('${book.id}')" title="删除">
+                            <i class="fas fa-trash"></i> 删除
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+async function renderStats() {
+    const db = booksDB;
+    const statsGrid = document.getElementById('statsGrid');    
+    const totalBooks = db.length;
+    const readingBooks = db.filter(b => b.status === 'reading').length;
+    const readBooks = db.filter(b => b.status === 'read').length;
+    const unreadBooks = db.filter(b => b.status === 'unread').length;    
+    let totalReadingTime = 0;
+    db.forEach(book => {
+        if (book.records) {
+            book.records.forEach(record => {
+                totalReadingTime += parseInt(record.duration) || 0;
+            });
+        }
+    });    
+    const ratedBooks = db.filter(b => b.personalRating > 0);
+    const avgRating = ratedBooks.length > 0 
+        ? (ratedBooks.reduce((sum, b) => sum + b.personalRating, 0) / ratedBooks.length).toFixed(1)
+        : 0;    
+    statsGrid.innerHTML = `
+        <div class="stat-item">
+            <div class="stat-number">${totalBooks}</div>
+            <div class="stat-label">总藏书</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">${readingBooks}</div>
+            <div class="stat-label">正在读</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">${readBooks}</div>
+            <div class="stat-label">已读完</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">${Math.round(totalReadingTime / 60)}</div>
+            <div class="stat-label">总阅读(小时)</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">${avgRating}</div>
+            <div class="stat-label">平均评分</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">${unreadBooks}</div>
+            <div class="stat-label">待阅读</div>
+        </div>
+    `;
+}
+
+async function renderReadingList() {
+    const db = booksDB;
+    const readingList = document.getElementById('readingList');    
+    const readingBooks = db.filter(b => b.status === 'reading');    
+    if (readingBooks.length === 0) {
+        readingList.innerHTML = `
+            <div class="empty-state" style="padding: 20px;">
+                <i class="fas fa-glasses"></i>
+                <p>暂无在读书籍<br>快去选一本开始阅读吧！</p>
+            </div>
+        `;
+        return;
+    }    
+    readingList.innerHTML = readingBooks.map(book => {
+        const latestRecord = book.records && book.records.length > 0 
+            ? [...book.records].sort((a, b) => new Date(b.date) - new Date(a.date))[0]
+            : null;        
+        return `
+            <div class="reading-item" onclick="openReadingModal('${book.id}')">
+                <div class="reading-item-title">${book.title}</div>
+                <div class="reading-item-meta">
+                    ${book.author} · 
+                    ${latestRecord ? `进度${latestRecord.progress || 0}%` : '尚未记录进度'}
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+async function updateAllViews() {
+    await renderBooks();
+    await renderStats();
+    await renderReadingList();
+}
+
+/* ==========================================
+   书籍封面处理
+   ========================================== */
+function previewCoverFromUrl() {
+    const url = document.getElementById('bookCoverUrl').value;
+    const preview = document.getElementById('coverPreview');
+    if (url) {
+        preview.innerHTML = `<img src="${url}" alt="封面预览" onerror="this.parentElement.innerHTML='<i class=\"fas fa-exclamation-triangle\"></i>'">`;
+        document.getElementById('bookCoverData').value = url;
+    } else {
+        preview.innerHTML = '<i class="fas fa-book"></i>';
+        document.getElementById('bookCoverData').value = '';
+    }
+}
+
+function previewCoverFromFile(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const preview = document.getElementById('coverPreview');
+        preview.innerHTML = `<img src="${e.target.result}" alt="封面预览">`;
+        document.getElementById('bookCoverData').value = e.target.result;
+        document.getElementById('bookCoverUrl').value = '';
+    };
+    reader.readAsDataURL(file);
+}
+
+/* ==========================================
+   评分星星交互
+   ========================================== */
+function setupRatingStars() {
+    const stars = document.querySelectorAll('#personalRating i');
+    const ratingInput = document.getElementById('bookPersonalRating');
+    stars.forEach(star => {
+        star.addEventListener('click', function() {
+            const value = parseInt(this.getAttribute('data-value'));
+            ratingInput.value = value;
+            stars.forEach(s => {
+                const starValue = parseInt(s.getAttribute('data-value'));
+                s.classList.toggle('active', starValue <= value);
+                s.classList.toggle('far', starValue > value);
+                s.classList.toggle('fas', starValue <= value);
+            });
+        });
+        star.addEventListener('mouseenter', function() {
+            const value = parseInt(this.getAttribute('data-value'));
+            stars.forEach(s => {
+                const starValue = parseInt(s.getAttribute('data-value'));
+                s.classList.toggle('hover', starValue <= value);
+            });
+        });
+    });
+    document.getElementById('personalRating').addEventListener('mouseleave', function() {
+        stars.forEach(s => s.classList.remove('hover'));
+    });
+}
+
+/* ==========================================
+   模态框控制
+   ========================================== */
+function openBookModal(id = null) {
+    const modal = document.getElementById('bookModal');
+    const title = document.getElementById('bookModalTitle');
+    const form = document.getElementById('bookForm');
+    if (id) {
+        const db = booksDB;
+        const book = db.find(b => b.id === id);
+        if (!book) return;
+        title.innerHTML = '<i class="fas fa-edit"></i> 编辑书籍';
+        document.getElementById('bookId').value = book.id;
+        document.getElementById('bookTitle').value = book.title;
+        document.getElementById('bookCountry').value = book.country || '';
+        document.getElementById('bookAuthor').value = book.author;
+        document.getElementById('bookYear').value = book.year || '';
+        document.getElementById('bookType').value = book.type || '';
+        document.getElementById('bookDescription').value = book.description || '';
+        document.getElementById('bookDoubanRating').value = book.doubanRating || '';
+        document.getElementById('bookStatus').value = book.status || 'unread';
+        document.getElementById('bookCoverData').value = book.coverData || '';
+        const personalRating = book.personalRating || 0;
+        document.getElementById('bookPersonalRating').value = personalRating;
+        const stars = document.querySelectorAll('#personalRating i');
+        stars.forEach(s => {
+            const starValue = parseInt(s.getAttribute('data-value'));
+            s.classList.toggle('active', starValue <= personalRating);
+            s.classList.toggle('far', starValue > personalRating);
+            s.classList.toggle('fas', starValue <= personalRating);
+        });
+        const preview = document.getElementById('coverPreview');
+        if (book.coverData) {
+            preview.innerHTML = `<img src="${book.coverData}" alt="${book.title}">`;
+            document.getElementById('bookCoverUrl').value = book.coverData.startsWith('data:') ? '' : book.coverData;
+        } else {
+            preview.innerHTML = '<i class="fas fa-book"></i>';
+            document.getElementById('bookCoverUrl').value = '';
+        }
+        document.getElementById('bookCoverFile').value = '';
+    } else {
+        title.innerHTML = '<i class="fas fa-plus-circle"></i> 添加新书';
+        form.reset();
+        document.getElementById('bookId').value = '';
+        document.getElementById('bookCoverData').value = '';
+        document.getElementById('bookPersonalRating').value = '0';
+        document.getElementById('bookStatus').value = 'unread';
+        document.getElementById('coverPreview').innerHTML = '<i class="fas fa-book"></i>';
+        document.getElementById('bookCoverUrl').value = '';
+        document.getElementById('bookCoverFile').value = '';
+        const stars = document.querySelectorAll('#personalRating i');
+        stars.forEach(s => {
+            s.classList.remove('active', 'fas');
+            s.classList.add('far');
+        });
+    }
+    modal.classList.add('active');
+    setupRatingStars();
+}
+
+function closeBookModal() {
+    document.getElementById('bookModal').classList.remove('active');
+}
+
+function openReadingModal(bookId) {
+    const db = booksDB;
+    const book = db.find(b => b.id === bookId);
+    if (!book) return;
+    document.getElementById('readingModalTitle').innerHTML = 
+        `<i class="fas fa-book-reader"></i> ${book.title} - 阅读记录`;
+    document.getElementById('recordBookId').value = bookId;
+    document.getElementById('recordDate').value = new Date().toISOString().split('T')[0];
+    renderReadingRecords(book);
+    switchReadingTab('records');
+    document.getElementById('readingModal').classList.add('active');
+}
+
+function closeReadingModal() {
+    document.getElementById('readingModal').classList.remove('active');
+}
+
+function openImportModal() {
+    document.getElementById('importModal').classList.add('active');
+}
+
+function closeImportModal() {
+    document.getElementById('importModal').classList.remove('active');
+}
+
+function openStatsModal() {
+    generateStatsContent();
+    document.getElementById('statsModal').classList.add('active');
+}
+
+function closeStatsModal() {
+    document.getElementById('statsModal').classList.remove('active');
+}
+
+/* ==========================================
+   书籍 CRUD
+   ========================================== */
+async function saveBook(event) {
+    event.preventDefault();
+    const id = document.getElementById('bookId').value;
+    const title = document.getElementById('bookTitle').value.trim();
+    const author = document.getElementById('bookAuthor').value.trim();
+    if (!title || !author) {
+        alert('书名和作者为必填项！');
+        return;
+    }
+    let db = booksDB;
+    const now = new Date().toISOString();
+    if (id) {
+        const index = db.findIndex(b => b.id === id);
+        if (index !== -1) {
+            db[index] = {
+                ...db[index],
+                title,
+                country: document.getElementById('bookCountry').value.trim(),
+                author,
+                year: document.getElementById('bookYear').value,
+                type: document.getElementById('bookType').value,
+                description: document.getElementById('bookDescription').value.trim(),
+                doubanRating: document.getElementById('bookDoubanRating').value,
+                personalRating: parseFloat(document.getElementById('bookPersonalRating').value) || 0,
+                status: document.getElementById('bookStatus').value,
+                coverData: document.getElementById('bookCoverData').value,
+                updatedAt: now
+            };
+        }
+    } else {
+        const newBook = {
+            id: generateId(),
+            title,
+            country: document.getElementById('bookCountry').value.trim(),
+            author,
+            year: document.getElementById('bookYear').value,
+            type: document.getElementById('bookType').value,
+            description: document.getElementById('bookDescription').value.trim(),
+            doubanRating: document.getElementById('bookDoubanRating').value,
+            personalRating: parseFloat(document.getElementById('bookPersonalRating').value) || 0,
+            status: document.getElementById('bookStatus').value,
+            coverData: document.getElementById('bookCoverData').value,
+            records: [],
+            createdAt: now,
+            updatedAt: now
+        };
+        db.push(newBook);
+    }
+    await saveBooksData(db);
+    await updateAllViews();
+    closeBookModal();
+    alert(id ? '书籍信息已更新！✨' : '新书已入库！✨');
+}
+
+async function deleteBook(id) {
+    if (!confirm('确定要将这本书从古堡藏书中移除吗？此操作将删除所有阅读记录！')) return;
+    let db = booksDB;
+    db = db.filter(book => book.id !== id);
+    await saveBooksData(db);
+    await updateAllViews();
+    alert('书籍已移除~');
+}
+
+/* ==========================================
+   阅读记录管理
+   ========================================== */
+function renderReadingRecords(book) {
+    const container = document.getElementById('readingRecordsList');
+    if (!book.records || book.records.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <i class="fas fa-book-open"></i>
+                <p>暂无阅读记录<br>点击"添加记录"开始记录你的阅读历程吧！</p>
+            </div>
+        `;
+        return;
+    }
+    const sortedRecords = [...book.records].sort((a, b) => new Date(b.date) - new Date(a.date));
+    container.innerHTML = sortedRecords.map(record => `
+        <div class="record-item">
+            <div class="record-header">
+                <span class="record-date">${formatDate(record.date)}</span>
+                <span class="record-time">阅读${record.duration}分钟</span>
+            </div>
+            <div class="record-details">
+                ${record.progress ? `<div>📊 进度：${record.progress}%</div>` : ''}
+                ${record.page ? `<div>📖 读到第${record.page}页</div>` : ''}
+                ${record.quote ? `<div class="record-quote">💡 "${record.quote}"</div>` : ''}
+                ${record.feeling ? `<div class="record-feeling">💭 ${record.feeling}</div>` : ''}
+            </div>
+        </div>
+    `).join('');
+}
+
+async function saveReadingRecord(event) {
+    event.preventDefault();
+    const bookId = document.getElementById('recordBookId').value;
+    const date = document.getElementById('recordDate').value;
+    const duration = document.getElementById('recordDuration').value;
+    const progress = document.getElementById('recordProgress').value;
+    const page = document.getElementById('recordPage').value;
+    const quote = document.getElementById('recordQuote').value.trim();
+    const feeling = document.getElementById('recordFeeling').value.trim();
+    if (!date || !duration) {
+        alert('阅读日期和时长为必填项！');
+        return;
+    }
+    let db = booksDB;
+    const bookIndex = db.findIndex(b => b.id === bookId);
+    if (bookIndex === -1) return;
+    const newRecord = {
+        id: generateId(),
+        date,
+        duration: parseInt(duration),
+        progress: progress ? parseInt(progress) : 0,
+        page: page ? parseInt(page) : null,
+        quote,
+        feeling,
+        createdAt: new Date().toISOString()
+    };
+    if (!db[bookIndex].records) {
+        db[bookIndex].records = [];
+    }
+    db[bookIndex].records.push(newRecord);
+    db[bookIndex].updatedAt = new Date().toISOString();
+    if (db[bookIndex].status === 'unread') {
+        db[bookIndex].status = 'reading';
+    }
+    await saveBooksData(db);
+    await updateAllViews();
+    renderReadingRecords(db[bookIndex]);
+    document.getElementById('readingForm').reset();
+    document.getElementById('recordDate').value = new Date().toISOString().split('T')[0];
+    switchReadingTab('records');
+    alert('阅读记录已保存！📚');
+}
+
+function switchReadingTab(tab) {
+    const recordsTab = document.getElementById('recordsTab');
+    const addTab = document.getElementById('addTab');
+    const tabs = document.querySelectorAll('.tab');
+    tabs.forEach(t => t.classList.remove('active'));
+    if (tab === 'records') {
+        recordsTab.style.display = 'block';
+        addTab.style.display = 'none';
+        tabs[0].classList.add('active');
+    } else {
+        recordsTab.style.display = 'none';
+        addTab.style.display = 'block';
+        tabs[1].classList.add('active');
+    }
+}
+
+/* ==========================================
+   批量导入
+   ========================================== */
+async function importBooks() {
+    const importText = document.getElementById('importText').value.trim();
+    if (!importText) {
+        alert('请先粘贴要导入的书籍数据！');
+        return;
+    }
+    const lines = importText.split('\n').filter(line => line.trim());
+    let importedCount = 0;
+    let skippedCount = 0;
+    let db = booksDB;
+    const existingTitles = new Set(db.map(b => b.title.toLowerCase()));
+    lines.forEach(line => {
+        const parts = line.split('|').map(p => p.trim());
+        if (parts.length < 2) { skippedCount++; return; }
+        const [title, author, country, year, type, description, doubanRating] = parts;
+        if (existingTitles.has(title.toLowerCase())) { skippedCount++; return; }
+        const newBook = {
+            id: generateId(),
+            title, author,
+            country: country || '',
+            year: year || '',
+            type: type || '',
+            description: description || '',
+            doubanRating: doubanRating || '',
+            personalRating: 0,
+            status: 'unread',
+            coverData: '',
+            records: [],
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+        };
+        db.push(newBook);
+        existingTitles.add(title.toLowerCase());
+        importedCount++;
+    });
+    await saveBooksData(db);
+    await updateAllViews();
+    closeImportModal();
+    alert(`导入完成！\n✅ 成功导入：${importedCount} 本书籍\n⚠️ 跳过重复：${skippedCount} 本`);
+}
+
+/* ==========================================
+   统计功能
+   ========================================== */
+function generateStatsContent() {
+    const db = booksDB;
+    const content = document.getElementById('statsContent');
+    if (db.length === 0) {
+        content.innerHTML = `
+            <div class="empty-state">
+                <i class="fas fa-chart-bar"></i>
+                <p>暂无书籍数据<br>先添加几本书再来查看统计吧！</p>
+            </div>
+        `;
+        return;
+    }
+    const totalBooks = db.length;
+    const readingBooks = db.filter(b => b.status === 'reading').length;
+    const readBooks = db.filter(b => b.status === 'read').length;
+    const unreadBooks = db.filter(b => b.status === 'unread').length;
+    let totalReadingTime = 0;
+    let totalPagesRead = 0;
+    const readingDates = new Set();
+    db.forEach(book => {
+        if (book.records) {
+            book.records.forEach(record => {
+                totalReadingTime += parseInt(record.duration) || 0;
+                if (record.page) totalPagesRead += record.page;
+                readingDates.add(record.date);
+            });
+        }
+    });
+    const typeCount = {};
+    db.forEach(book => {
+        const type = book.type || '未分类';
+        typeCount[type] = (typeCount[type] || 0) + 1;
+    });
+    const topTypes = Object.entries(typeCount)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 5);
+    const ratedBooks = db.filter(b => b.personalRating > 0);
+    const avgRating = ratedBooks.length > 0 
+        ? (ratedBooks.reduce((sum, b) => sum + b.personalRating, 0) / ratedBooks.length).toFixed(1)
+        : 0;
+    const highRatedBooks = db.filter(b => b.personalRating >= 4)
+        .sort((a, b) => b.personalRating - a.personalRating)
+        .slice(0, 5);
+    content.innerHTML = `
+        <div style="padding: 20px;">
+            <h3 style="color: var(--accent-blue); margin-bottom: 20px;">
+                <i class="fas fa-chart-line"></i> 阅读统计报告
+            </h3>
+            <div class="stats-grid" style="margin-bottom: 30px;">
+                <div class="stat-item">
+                    <div class="stat-number">${totalBooks}</div>
+                    <div class="stat-label">总藏书量</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">${readBooks}</div>
+                    <div class="stat-label">已读完</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">${readingBooks}</div>
+                    <div class="stat-label">正在读</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">${unreadBooks}</div>
+                    <div class="stat-label">待阅读</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">${Math.round(totalReadingTime / 60)}</div>
+                    <div class="stat-label">总阅读(小时)</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">${readingDates.size}</div>
+                    <div class="stat-label">阅读天数</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">${avgRating}</div>
+                    <div class="stat-label">平均评分</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">${totalPagesRead}</div>
+                    <div class="stat-label">累计页数</div>
+                </div>
+            </div>
+            ${topTypes.length > 0 ? `
+            <div style="margin-bottom: 30px;">
+                <h4 style="color: var(--accent-blue); margin-bottom: 15px;">
+                    <i class="fas fa-layer-group"></i> 书籍类型分布
+                </h4>
+                ${topTypes.map(([type, count]) => `
+                    <div style="display: flex; justify-content: space-between; align-items: center; 
+                                padding: 10px; background: rgba(255,255,255,0.6); border-radius: 8px; margin-bottom: 8px;">
+                        <span>${type}</span>
+                        <span style="font-weight: bold; color: var(--accent-blue);">${count} 本</span>
+                    </div>
+                `).join('')}
+            </div>` : ''}
+            ${highRatedBooks.length > 0 ? `
+            <div>
+                <h4 style="color: var(--accent-blue); margin-bottom: 15px;">
+                    <i class="fas fa-star"></i> 高分推荐 (4分以上)
+                </h4>
+                ${highRatedBooks.map(book => `
+                    <div style="display: flex; justify-content: space-between; align-items: center; 
+                                padding: 10px; background: rgba(255,255,255,0.6); border-radius: 8px; margin-bottom: 8px;">
+                        <span>${book.title}</span>
+                        <span style="color: #ffc107; font-weight: bold;">${book.personalRating} ★</span>
+                    </div>
+                `).join('')}
+            </div>` : ''}
+            <div style="margin-top: 30px; padding: 15px; background: rgba(255,255,255,0.6); border-radius: 12px;">
+                <p style="color: var(--text-light); font-size: 0.9em; margin: 0;">
+                    📅 报告生成时间：${new Date().toLocaleString('zh-CN')}<br>
+                    💡 提示：坚持每天阅读，让知识的力量在古堡中不断积累！
+                </p>
+            </div>
+        </div>
+    `;
+}
+
+async function exportStats() {
+    const db = booksDB;
+    if (db.length === 0) {
+        alert('暂无数据可导出！');
+        return;
+    }
+    let content = '📚 古堡藏书 - 阅读统计报告\n';
+    content += '===================================\n\n';
+    content += `生成时间：${new Date().toLocaleString('zh-CN')}\n\n`;
+    const totalBooks = db.length;
+    const readingBooks = db.filter(b => b.status === 'reading').length;
+    const readBooks = db.filter(b => b.status === 'read').length;
+    const unreadBooks = db.filter(b => b.status === 'unread').length;
+    content += `📊 基础统计：\n`;
+    content += `总藏书量：${totalBooks} 本\n`;
+    content += `已读完：${readBooks} 本\n`;
+    content += `正在读：${readingBooks} 本\n`;
+    content += `待阅读：${unreadBooks} 本\n\n`;
+    content += `📚 书籍清单：\n`;
+    content += '-----------------------------------\n';
+    db.forEach((book, index) => {
+        const statusInfo = getStatusInfo(book.status);
+        content += `${index + 1}. ${book.title}\n`;
+        content += `   作者：${book.author}\n`;
+        content += `   类型：${book.type || '未分类'}\n`;
+        content += `   国家：${book.country || '未知'}\n`;
+        content += `   年份：${book.year || '未知'}\n`;
+        content += `   状态：${statusInfo.text}\n`;
+        if (book.personalRating) content += `   个人评分：${book.personalRating} 星\n`;
+        if (book.doubanRating) content += `   豆瓣评分：${book.doubanRating} 分\n`;
+        content += '\n';
+    });
+    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `古堡藏书统计_${new Date().toISOString().split('T')[0]}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+    alert('统计报告已导出！📄');
+}
+
+/* ==========================================
+   点击模态框外部关闭
+   ========================================== */
+document.querySelectorAll('.modal').forEach(modal => {
+    modal.addEventListener('click', function(e) {
+        if (e.target === this) {
+            this.classList.remove('active');
+        }
+    });
+});
+</script>
+
+</body>
+</html>
