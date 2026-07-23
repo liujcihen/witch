@@ -1102,7 +1102,7 @@ async function updateIdeasCard() {
     const data = await GistDB.getKey('witchIdeasDB') || [];
     const c = document.getElementById('ideasContent');
     if(!data.length){ c.innerHTML=`<div class="empty-state"><i class="fas fa-lightbulb"></i><p>暂无灵感</p></div>`; return; }
-    const recent=[...data].sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt)).slice(0,3);
+    const recent=[...data].sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt)).slice(0,1);
     let html='';
     recent.forEach(idea=>{
         const tags=idea.tags||[];
